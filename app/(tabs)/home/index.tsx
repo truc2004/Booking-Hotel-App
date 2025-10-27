@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
-import RoomCard from "../../../components/RoomCard";
+import { ActivityIndicator, FlatList, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchRooms } from "../../../api/roomApi";
+import RoomCard from "../../../components/RoomCard";
 import { Room } from "../../../types/room";
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const [rooms, setRooms] = useState<null | Room[]>(null);

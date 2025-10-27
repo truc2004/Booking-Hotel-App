@@ -1,9 +1,9 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchRoomById } from "../../../api/roomApi";
 import { Room } from "../../../types/room";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RoomDetailScreen() {
   const { room_id } = useLocalSearchParams<{ room_id: string }>(); 
