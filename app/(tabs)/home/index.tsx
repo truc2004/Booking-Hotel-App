@@ -27,19 +27,19 @@ export default function HomeScreen() {
   if (loading) return <ActivityIndicator style={{ marginTop: 20 }} />;
   if (error) return <Text style={styles.error}>Lỗi: {error}</Text>;
 
-  const roomList = Array.isArray((rooms as any)?.res) ? (rooms as any).res : [];
+//   const roomList = Array.isArray((rooms as any)?.res) ? (rooms as any).res : [];
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Danh sách phòng</Text>
  
       <FlatList
-        data={roomList}
+        data={rooms}
         keyExtractor={(item) => item.room_id}
         renderItem={({ item }) => <RoomCard room={item} />}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

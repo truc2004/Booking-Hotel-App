@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { fetchRoomById } from "../../../api/roomApi";
 import { Room } from "../../../types/room";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RoomDetailScreen() {
   const { room_id } = useLocalSearchParams<{ room_id: string }>(); 
@@ -41,7 +42,7 @@ export default function RoomDetailScreen() {
   
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>{room.room_id} - Chi tiết phòng</Text>
       <Text>Hotel ID: {room.hotel_id}</Text>
       <Text>Giá/đêm: {room.price_per_night}</Text>
@@ -51,7 +52,7 @@ export default function RoomDetailScreen() {
        <TouchableOpacity style={styles.button} onPress={handleBooking}>
         <Text style={styles.buttonText}>Đặt phòng</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
