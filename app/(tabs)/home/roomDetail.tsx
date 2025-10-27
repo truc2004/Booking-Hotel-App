@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { fetchRoomById } from "../api/roomApi";
-import { Room } from "../types/room";
+import { fetchRoomById } from "../../../api/roomApi";
+import { Room } from "../../../types/room";
 
 export default function RoomDetailScreen() {
   const { room_id } = useLocalSearchParams<{ room_id: string }>(); 
@@ -13,7 +13,7 @@ export default function RoomDetailScreen() {
   const handleBooking = () => {
     if (!room) return;
     router.push({
-      pathname: "/booking",
+      pathname: "/(tabs)/home/booking",
       params: { room_id: room.room_id, hotel_id: room.hotel_id }
     });
   };
@@ -68,8 +68,3 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
-
-// ẩn tab bar
-export const unstable_settings = {
-  tabBarStyle: { display: "none" },
-};

@@ -9,9 +9,9 @@ type RoomCardProps = {
 
 export default function RoomCard({ room }: RoomCardProps) {
 
-   const handleViewDetail = () => {
+  const handleViewDetail = () => {
     // Dùng query param ?room_id=xxx
-    router.push(`/roomDetail?room_id=${room.room_id}`);
+    router.push(`/(tabs)/home/roomDetail?room_id=${room.room_id}`);
   };
 
 
@@ -27,7 +27,10 @@ export default function RoomCard({ room }: RoomCardProps) {
           {room.description}
         </Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleViewDetail}>Xem chi tiết</TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleViewDetail}>
+          <Text>Xem chi tiết</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -52,5 +55,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'pink',
     padding: 10,
     marginTop: 10,
+    height: 50,
   }
 });
