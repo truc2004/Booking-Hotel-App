@@ -1,6 +1,6 @@
 import { fetchRoomById } from "@/api/roomApi";
 import { Room } from "@/types/room";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -18,6 +18,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker"; 
 import { LinearGradient } from 'expo-linear-gradient'; 
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import ButtonBottom from "@/components/ButtonBottom";
 
 const BUTTON_HEIGHT = 120; // Giữ nguyên để đảm bảo khoảng trống
 
@@ -89,6 +90,12 @@ export default function BookingScreen() {
     const formatDate = (date: Date) => {
         return date.toLocaleDateString("vi-VN", { day: "numeric", month: "short", year: "numeric" });
     };
+
+    const handleBooking = () => {
+        router.push({
+            pathname: "/(tabs)/home/order",
+        })
+    }
 
     return (
     <SafeAreaView style={[styles.container, { flex: 1 }]} edges={['top']}>
@@ -216,17 +223,7 @@ export default function BookingScreen() {
                 </ScrollView>
 
                 {/* Nút Continue cố định ở dưới */}
-                <View style={styles.fixedButtonContainer}>
-                    <LinearGradient
-                        colors={['rgba(0, 0, 0, 0.1)', 'transparent']} 
-                        style={styles.shadowTop}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 0, y: 1 }}
-                    />
-                    <TouchableOpacity style={styles.continueButton} onPress={() => { /* Xử lý tiếp tục */ }}>
-                        <Text style={styles.continueButtonText}>Continue</Text>
-                    </TouchableOpacity>
-                </View>
+                <ButtonBottom onPress={handleBooking} title={"Đặt phòng"}/>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -480,56 +477,5 @@ const styles = StyleSheet.create({
         textAlignVertical: "top",
         backgroundColor: "#f8f9fa",
         minHeight: 100,
-    },
-
-    /* ===== PHẦN NÚT CONTINUE CỐ ĐỊNH (Fixed Bottom Bar) ===== */
-    fixedButtonContainer: {
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: 20,
-        backgroundColor: "#fff",
-        ...Platform.select({
-            ios: {
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 10 },
-                shadowOpacity: 0.1,
-                shadowRadius: 20,
-            },
-            android: {
-                elevation: 10,
-            },
-        }),
-    },
-    shadowTop: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 8,
-    },
-    continueButton: {
-        backgroundColor: "#007AFF",
-        paddingVertical: 18,
-        paddingHorizontal: 24,
-        borderRadius: 12,
-        alignItems: "center",
-        ...Platform.select({
-            ios: {
-                shadowColor: "#007AFF",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-            },
-            android: {
-                elevation: 5,
-            },
-        }),
-    },
-    continueButtonText: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: "700",
     },
 });

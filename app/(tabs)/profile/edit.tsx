@@ -1,3 +1,4 @@
+import ButtonBackScreen from "@/components/ButtonBackScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -12,8 +13,8 @@ const COLOR = {
 };
 
 export default function EditProfileScreen() {
-  const [name, setName] = useState("Esther Howard");
-  const [phone, setPhone] = useState("603.555.0123");
+  const [name, setName] = useState("Hồng Phúc");
+  const [phone, setPhone] = useState("0902986680");
   const [email, setEmail] = useState("example@gmail.com");
   const [dob, setDob] = useState("20/12/2000");
   const [gender, setGender] = useState("Female");
@@ -22,10 +23,8 @@ export default function EditProfileScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.topbar}>
-        <TouchableOpacity onPress={() => router.back()} style={{ padding: 6 }}>
-          <Ionicons name="chevron-back" size={22} color={COLOR.black} />
-        </TouchableOpacity>
-        <Text style={styles.topTitle}>Edit Profile</Text>
+        <ButtonBackScreen />
+        <Text style={styles.topTitle}>Chỉnh sửa thông tin</Text>
         <View style={{ width: 28 }} />
       </View>
 
@@ -44,7 +43,7 @@ export default function EditProfileScreen() {
 
       {/* Form */}
       <View style={styles.form}>
-        <Field label="Name">
+        <Field label="Tên">
           <TextInput
             value={name}
             onChangeText={setName}
@@ -55,7 +54,7 @@ export default function EditProfileScreen() {
         </Field>
 
         <Field
-          label="Phone Number"
+          label="Số điện thoại"
           right={
             <TouchableOpacity>
               <Text style={styles.link}>Change</Text>
@@ -83,7 +82,7 @@ export default function EditProfileScreen() {
           />
         </Field>
 
-        <Field label="Date of Birth">
+        <Field label="Ngày sinh">
           <TextInput
             value={dob}
             onChangeText={setDob}
@@ -93,7 +92,7 @@ export default function EditProfileScreen() {
           />
         </Field>
 
-        <Field label="Gender">
+        <Field label="Giới tính">
           <TextInput
             value={gender}
             onChangeText={setGender}
@@ -104,7 +103,7 @@ export default function EditProfileScreen() {
         </Field>
 
         <TouchableOpacity style={styles.btn}>
-          <Text style={styles.btnText}>Update Profile</Text>
+          <Text style={styles.btnText}>Cập nhật thông tin</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -136,11 +135,11 @@ const styles = StyleSheet.create({
   topbar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingHorizontal: 8,
     height: 44,
   },
-  topTitle: { fontSize: 16, fontWeight: "600", color: "#101010" },
+  topTitle: { fontSize: 18, fontWeight: "600", color: "#101010"},
   center: { alignItems: "center", marginVertical: 12 },
   avatarWrap: { position: "relative" },
   avatar: { width: 96, height: 96, borderRadius: 48 },

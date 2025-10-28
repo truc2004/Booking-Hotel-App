@@ -5,7 +5,6 @@ export default function ProfileLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="edit" />
-      <Stack.Screen name="myBookings" />
     </Stack>
   );
 }

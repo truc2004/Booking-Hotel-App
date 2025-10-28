@@ -1,3 +1,5 @@
+import ButtonBackScreen from "@/components/ButtonBackScreen";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   View,
@@ -59,13 +61,17 @@ export default function FilterScreen() {
     setReviewRating("4.5+");
   };
 
+  const handleApply = () => {
+    router.push({
+      pathname: "/(tabs)/home/listRoom"
+    })
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.backIcon}>‹</Text>
-        </TouchableOpacity>
+        <ButtonBackScreen />
         <Text style={styles.headerTitle}>Bộ lọc</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -155,8 +161,6 @@ export default function FilterScreen() {
             />
           ))}
         </View>
-
-        <View style={{ height: 120 }} />
       </ScrollView>
 
       {/* FOOTER */}
@@ -164,7 +168,7 @@ export default function FilterScreen() {
         <TouchableOpacity style={styles.resetBtn} onPress={handleReset}>
           <Text style={styles.resetText}>Đặt lại</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.applyBtn}>
+        <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
           <Text style={styles.applyText}>Áp dụng</Text>
         </TouchableOpacity>
       </View>
@@ -178,13 +182,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
   },
   backIcon: {
     fontSize: 28,
-    color: "#2563EB",
+    color: "#2E76FF",
     fontWeight: "600",
   },
   headerTitle: {
@@ -231,8 +232,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   optionCircleActive: {
-    borderColor: "#2563EB",
-    backgroundColor: "#2563EB",
+    borderColor: "#2E76FF",
+    backgroundColor: "#2E76FF",
   },
   optionDot: {
     height: 10,
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
     color: "#475569",
   },
   optionLabelActive: {
-    color: "#2563EB",
+    color: "#2E76FF",
     fontWeight: "600",
   },
   adjustBox: {
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#2563EB",
+    backgroundColor: "#2E76FF",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
   resetBtn: {
     flex: 1,
     borderWidth: 1.5,
-    borderColor: "#2563EB",
+    borderColor: "#2E76FF",
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
   },
   applyBtn: {
     flex: 1,
-    backgroundColor: "#2563EB",
+    backgroundColor: "#2E76FF",
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
@@ -315,7 +316,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   resetText: {
-    color: "#2563EB",
+    color: "#2E76FF",
     fontSize: 16,
     fontWeight: "600",
   },

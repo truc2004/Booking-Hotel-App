@@ -1,8 +1,10 @@
-import { router } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Room } from "../types/room";
+
+const { width } = Dimensions.get("window");
 
 type RoomCardProps = {
   room: Room;
@@ -20,7 +22,11 @@ export default function RoomCard({ room }: RoomCardProps) {
   };
 
   return (
-    <TouchableOpacity style={styles.cardContainer} activeOpacity={0.9} onPress={handleViewDetail}>
+    <TouchableOpacity
+      style={styles.cardContainer}
+      activeOpacity={0.9}
+      onPress={handleViewDetail}
+    >
       <View style={styles.card}>
         {/* Hình phòng */}
         <View style={styles.imageContainer}>
@@ -34,7 +40,7 @@ export default function RoomCard({ room }: RoomCardProps) {
             <Ionicons
               name={favorited ? "heart" : "heart-outline"}
               size={26}
-              color={favorited ? "red" : "white"}
+              color={favorited ? "#2E76FF" : "white"}
             />
           </TouchableOpacity>
         </View>
@@ -59,9 +65,7 @@ export default function RoomCard({ room }: RoomCardProps) {
             <Text style={styles.locationText}>Vũng Tàu, Hồ Chí Minh</Text>
           </View>
 
-          <Text style={styles.price}>
-            {room.price_per_night.toLocaleString()}₫ / đêm
-          </Text>
+          <Text style={styles.price}>{room.price_per_night.toLocaleString()}₫ / đêm</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -70,22 +74,22 @@ export default function RoomCard({ room }: RoomCardProps) {
 
 const styles = StyleSheet.create({
   cardContainer: {
+    width: width * 0.9,
+    marginVertical: 8,
+    backgroundColor: "transparent",
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 6,
   },
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
     borderRadius: 16,
-    overflow: "visible", 
-    marginBottom: 20,
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    borderWidth: 0.5,
-    borderColor: "#ddd",
+    overflow: "hidden",
     padding: 10,
-    margin: 5,
   },
   imageContainer: {
     width: 120,
@@ -93,6 +97,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
     marginRight: 10,
+    position: "relative",
   },
   image: {
     width: "100%",
@@ -119,19 +124,23 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 17,
     fontWeight: "bold",
-    color: "#333",
+    color: "#222",
     flex: 1,
     marginRight: 5,
   },
   rating: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.9)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
   ratingText: {
-    marginLeft: 4,
-    fontSize: 13,
+    marginLeft: 3,
     fontWeight: "600",
-    color: "#555",
+    color: "#333",
+    fontSize: 13,
   },
   price: {
     color: "#27ae60",
@@ -155,5 +164,3 @@ const styles = StyleSheet.create({
     color: "#555",
   },
 });
-
-

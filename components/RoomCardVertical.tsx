@@ -30,7 +30,7 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
             <Ionicons
               name={liked ? "heart" : "heart-outline"}
               size={22}
-              color={liked ? "#FF4D4D" : "#fff"}
+              color={liked ? "#2E76FF" : "white"}
             />
           </TouchableOpacity>
           {/* Số sao */}
@@ -46,13 +46,13 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
             Golden Valley
           </Text>
           <View style={styles.locationContainer}>
-                      <Image
-                        source={require("../assets/images/icon/map.png")}
-                        style={styles.iconMap}
-                      />
-                      <Text style={styles.locationText}>Vũng Tàu, Hồ Chí Minh</Text>
-                    </View>
-          <Text style={styles.price}>₫{room.price_per_night.toLocaleString()} / đêm</Text>
+            <Image
+              source={require("../assets/images/icon/map.png")}
+              style={styles.iconMap}
+            />
+            <Text style={styles.locationText}>Vũng Tàu, Hồ Chí Minh</Text>
+          </View>
+          <Text style={styles.price}>{room.price_per_night.toLocaleString()}₫ / đêm</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -61,21 +61,21 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
 
 const styles = StyleSheet.create({
   cardContainer: {
-  width: width * 0.6,
-  marginRight: 15,
-  marginBottom: 8,
-  backgroundColor: "transparent",
-  shadowColor: "#000",
-  shadowOffset: { width: 4, height: 6 },
-  shadowOpacity: 0.12,                   
-  shadowRadius: 10,                      
-  elevation: 8,                          
-  borderRadius: 14,                      
-},
+    width: width * 0.6,
+    marginRight: 15,
+    marginBottom: 8,
+    backgroundColor: "transparent",
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 8,
+    borderRadius: 14,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 14,
-    overflow: "hidden", 
+    overflow: "hidden",
   },
   imageContainer: {
     position: "relative",

@@ -1,3 +1,4 @@
+import ButtonBackScreen from "@/components/ButtonBackScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -11,19 +12,20 @@ const COLOR = {
 };
 
 const MENU = [
-  { key: "profile", label: "Your Profile", icon: "person-outline", onPress: () => router.push("/(tabs)/profile/edit") },
-  { key: "bookings", label: "My Bookings", icon: "receipt-outline", onPress: () => router.push("/(tabs)/profile/myBookings") },
-  { key: "payment", label: "Payment Methods", icon: "card-outline" },
-  { key: "wallet", label: "My Wallet", icon: "wallet-outline" },
-  { key: "settings", label: "Settings", icon: "settings-outline" },
-  { key: "help", label: "Help Center", icon: "help-circle-outline" },
-  { key: "logout", label: "Log out", icon: "log-out-outline" },
+  { key: "profile", label: "Hồ sơ của bạn", icon: "person-outline", onPress: () => router.push("/(tabs)/profile/edit") },
+  { key: "bookings", label: "Đơn hàng của tôi", icon: "receipt-outline", onPress: () => router.push("/(tabs)/historyBooking") },
+  { key: "payment", label: "Phương thức thanh toán", icon: "card-outline" },
+  { key: "wallet", label: "Ví của tôi", icon: "wallet-outline" },
+  { key: "settings", label: "Cài đặt", icon: "settings-outline" },
+  { key: "help", label: "Trung tâm trợ giúp", icon: "help-circle-outline" },
+  { key: "logout", label: "Đăng xuất", icon: "log-out-outline" },
 ];
 
 export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <ButtonBackScreen />
         <View style={styles.avatarWrap}>
           <Image
             source={{ uri: "https://i.pravatar.cc/160?img=12" }}
@@ -33,7 +35,7 @@ export default function ProfileScreen() {
             <Ionicons name="pencil" size={14} color="#fff" />
           </View>
         </View>
-        <Text style={styles.name}>Esther Howard</Text>
+        <Text style={styles.name}>Hồng Phúc</Text>
       </View>
 
       <FlatList
@@ -57,8 +59,8 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
-  header: { alignItems: "center", marginTop: 20, marginBottom: 16 },
-  avatarWrap: { position: "relative" },
+  header: { alignItems: "center", marginBottom: 16 },
+  avatarWrap: { position: "relative", marginTop: 50 },
   avatar: { width: 88, height: 88, borderRadius: 44 },
   avatarEdit: {
     position: "absolute",

@@ -7,6 +7,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         {/* Entry point của app là tab layout */}
         <Stack.Screen name="(tabs)/home" />
+        <Stack.Screen name="(tabs)/profile" />
       </Stack>
     </SafeAreaProvider>
   );

@@ -12,7 +12,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
+          title: "Trang chủ",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" color={color} size={size} />
           ),
@@ -21,7 +21,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="favorite"
         options={{
-          title: "Favorites",
+          title: "Yêu thích",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart-outline" color={color} size={size} />
           ),
@@ -30,7 +30,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="historyBooking"
         options={{
-          title: "History",
+          title: "Lịch sử",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time-outline" color={color} size={size} />
           ),
@@ -39,7 +39,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: "Hồ sơ",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" color={color} size={size} />
           ),
