@@ -15,7 +15,7 @@ export default function PaymentScreen() {
 
     const handleUpdate = () => {
         router.push({
-            pathname: "/(tabs)/historyBooking",
+            pathname: "/(tabs)/home",
         });
     };
 
@@ -42,7 +42,7 @@ export default function PaymentScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f8f9fa",
+        backgroundColor: "#F8FAFF",
         justifyContent: "space-between",
     },
     infoContainer: {

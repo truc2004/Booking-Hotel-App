@@ -3,23 +3,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
     StyleSheet,
     Text,
-    View,
-    Image,
-    TouchableOpacity,
-    TextInput,
-    ScrollView,
-    Platform,
-    Dimensions,
-    KeyboardAvoidingView,
 } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
 import ButtonBottom from "@/components/ButtonBottom";
 import { router } from "expo-router";
+import HeaderScreen from "@/components/HeaderScreen";
 
 
-export default function PaymentScreen() {
+export default function HelpCenterScreen() {
 
-    const handleUpdate = () => {
+    const handleSubmit = () => {
         router.push({
             pathname: "/(tabs)/home/order",
         })
@@ -27,10 +19,12 @@ export default function PaymentScreen() {
 
     return (
         <SafeAreaView style={[styles.container, { flex: 1 }]} edges={['top']}>
+            {/* header */}
+            <HeaderScreen title="Trung tâm trợ giúp" />
 
+            <Text>Trung tâm trợ giúp</Text>
 
-            {/* Nút Continue cố định ở dưới */}
-           <ButtonBottom onPress={handleUpdate} title={"Xác nhận"}/>
+            
         </SafeAreaView>
     );
 }
@@ -38,6 +32,6 @@ export default function PaymentScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f8f9fa",
+        backgroundColor: "#F8FAFF",
     },
 });

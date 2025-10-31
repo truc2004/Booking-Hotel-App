@@ -5,6 +5,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookingCard from "../../components/BookingCard";
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import HeaderScreen from "@/components/HeaderScreen";
 
 const COLOR = { blue: "#2E76FF", black: "#101010", gray: "#CFCFCF", grayWhite: "#EFEFEF" };
 
@@ -33,12 +34,8 @@ export default function MyBookingsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Topbar */}
-      <View style={styles.topbar}>
-        <ButtonBackScreen />
-        <Text style={styles.topTitle}>Lịch sử đặt phòng</Text>
-        <View style={{ width: 28 }} />
-      </View>
+      {/* header */}
+      <HeaderScreen title="Lịch sử đặt phòng"/>
 
       {/* Tabs */}
       <View style={styles.tabRow}>
@@ -62,7 +59,7 @@ export default function MyBookingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFFFF" },
+  container: { flex: 1, backgroundColor: "#F8FAFF" },
   topbar: { flexDirection: "row", alignItems: "center", justifyContent: "center", height: 44 },
   topTitle: { fontSize: 16, fontWeight: "600", color: "#101010" },
   tabRow: { flexDirection: "row", justifyContent: "space-around", borderBottomWidth: 1, borderColor: "#EFEFEF", marginTop: 20 },

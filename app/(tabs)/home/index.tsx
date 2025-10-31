@@ -71,8 +71,9 @@ export default function HomeScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.room_id}
-            contentContainerStyle={{ paddingRight: 20 }}
+            contentContainerStyle={{ paddingHorizontal: 6 }}
           />
+
         </View>
 
         {/* Danh sách phòng */}
@@ -86,9 +87,10 @@ export default function HomeScreen() {
           <FlatList
             data={standardRooms}
             keyExtractor={(item) => item.room_id}
-            renderItem={({ item }) => <RoomCard room={item} />}
-            scrollEnabled={false}
-
+            renderItem={({ item }) => <RoomCardVertical room={item} />}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 6 }}
           />
         </View>
       </ScrollView>
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8FAFF",
-    paddingHorizontal: 18,
+    paddingHorizontal: 15,
 
   },
   error: {

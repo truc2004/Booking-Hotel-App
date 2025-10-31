@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         marginVertical: 18,
-        marginLeft: 5,
+        marginLeft: 1,
     },
     inputSearch: {
         flexDirection: "row",

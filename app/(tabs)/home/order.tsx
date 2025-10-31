@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import ButtonBottom from "@/components/ButtonBottom";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import HeaderScreen from "@/components/HeaderScreen";
 
 export default function BookingScreen() {
     const router = useRouter();
@@ -18,12 +19,11 @@ export default function BookingScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+              {/* Header */}
+              <HeaderScreen title="Thanh toán"/>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                {/* Header */}
-                <View style={styles.header}>
-                    <ButtonBackScreen />
-                    <Text style={styles.title}>Thanh toán</Text>
-                </View>
+              
+
 
                 {/* Property Card */}
                 <View style={styles.propertyCard}>
@@ -101,7 +101,7 @@ export default function BookingScreen() {
 const styles = StyleSheet.create({
     container: { 
         flex: 1, 
-        backgroundColor: "#f8f9fa" 
+        backgroundColor: "#F8FAFF" 
     },
     scrollContent: {
         paddingBottom: 100,

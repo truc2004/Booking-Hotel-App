@@ -43,6 +43,5 @@ const styles = StyleSheet.create({
   backIcon: {
     width: 20,
     height: 20,
-    tintColor: "#2E76FF",
   },
 });

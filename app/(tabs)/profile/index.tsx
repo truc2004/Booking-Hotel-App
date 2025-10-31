@@ -58,7 +58,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#F8FAFF" },
   header: { alignItems: "center", marginBottom: 16 },
   avatarWrap: { position: "relative", marginTop: 50 },
   avatar: { width: 88, height: 88, borderRadius: 44 },

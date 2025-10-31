@@ -1,4 +1,5 @@
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import HeaderScreen from "@/components/HeaderScreen";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -70,11 +71,7 @@ export default function FilterScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
-      <View style={styles.header}>
-        <ButtonBackScreen />
-        <Text style={styles.headerTitle}>Bộ lọc</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <HeaderScreen title="Bộ lọc" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -177,7 +174,7 @@ export default function FilterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8FAFC" },
+  container: { flex: 1, backgroundColor: "#F8FAFF" },
   header: {
     flexDirection: "row",
     alignItems: "center",

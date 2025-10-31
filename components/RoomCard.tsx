@@ -1,7 +1,14 @@
-import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useState } from "react";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Room } from "../types/room";
 
 const { width } = Dimensions.get("window");
@@ -28,19 +35,18 @@ export default function RoomCard({ room }: RoomCardProps) {
       onPress={handleViewDetail}
     >
       <View style={styles.card}>
-        {/* Hình phòng */}
-        <View style={styles.imageContainer}>
+        {/* Ảnh phòng */}
+        <View style={styles.imageWrapper}>
           <Image
             source={require("../assets/images/hotel1/1.jpg")}
             style={styles.image}
           />
-
           {/* Nút trái tim */}
           <TouchableOpacity style={styles.heartButton} onPress={toggleFavorite}>
             <Ionicons
               name={favorited ? "heart" : "heart-outline"}
-              size={26}
-              color={favorited ? "#2E76FF" : "white"}
+              size={24}
+              color={favorited ? "red" : "#fff"}
             />
           </TouchableOpacity>
         </View>
@@ -52,7 +58,7 @@ export default function RoomCard({ room }: RoomCardProps) {
               Golden Valley
             </Text>
             <View style={styles.rating}>
-              <Ionicons name="star" size={16} color="#FFD700" />
+              <Ionicons name="star" size={14} color="#FFD700" />
               <Text style={styles.ratingText}>4.9</Text>
             </View>
           </View>
@@ -62,10 +68,14 @@ export default function RoomCard({ room }: RoomCardProps) {
               source={require("../assets/images/icon/map.png")}
               style={styles.iconMap}
             />
-            <Text style={styles.locationText}>Vũng Tàu, Hồ Chí Minh</Text>
+            <Text style={styles.locationText} numberOfLines={1}>
+              Vũng Tàu, Hồ Chí Minh
+            </Text>
           </View>
 
-          <Text style={styles.price}>{room.price_per_night.toLocaleString()}₫ / đêm</Text>
+          <Text style={styles.price}>
+            {room.price_per_night.toLocaleString()}₫ / đêm
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -75,35 +85,42 @@ export default function RoomCard({ room }: RoomCardProps) {
 const styles = StyleSheet.create({
   cardContainer: {
     width: width * 0.9,
-    marginVertical: 8,
     backgroundColor: "transparent",
     borderRadius: 16,
+    marginVertical: 8,
+
+    // Bóng iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 6,
-    elevation: 6,
+
+    // Bóng Android
+    elevation: 5,
   },
+
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
     borderRadius: 16,
     overflow: "hidden",
-    padding: 10,
   },
-  imageContainer: {
+
+  imageWrapper: {
     width: 120,
     height: 120,
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
     overflow: "hidden",
-    marginRight: 10,
     position: "relative",
   },
+
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 16,
+    resizeMode: "cover",
   },
+
   heartButton: {
     position: "absolute",
     top: 8,
@@ -112,55 +129,65 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 20,
   },
+
   info: {
     flex: 1,
     justifyContent: "center",
+    padding: 10,
   },
+
   headerInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+
   name: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "600",
     color: "#222",
-    flex: 1,
-    marginRight: 5,
+    flexShrink: 1,
   },
+
   rating: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.9)",
+    backgroundColor: "rgba(255,255,255,0.95)",
     paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 8,
   },
+
   ratingText: {
     marginLeft: 3,
     fontWeight: "600",
     color: "#333",
-    fontSize: 13,
+    fontSize: 12,
   },
-  price: {
-    color: "#27ae60",
-    fontWeight: "bold",
-    marginTop: 8,
-    fontSize: 13,
-  },
+
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 6,
   },
+
   iconMap: {
-    height: 18,
-    width: 18,
+    height: 16,
+    width: 16,
     tintColor: "#797979",
     marginRight: 5,
   },
+
   locationText: {
     fontSize: 13,
     color: "#555",
+    flexShrink: 1,
+  },
+
+  price: {
+    color: "#27ae60",
+    fontWeight: "700",
+    marginTop: 6,
+    fontSize: 13,
   },
 });

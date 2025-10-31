@@ -14,6 +14,7 @@ import {
     Platform,
     Dimensions,
     KeyboardAvoidingView,
+    ActivityIndicator,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker"; 
 import { LinearGradient } from 'expo-linear-gradient'; 
@@ -60,7 +61,12 @@ export default function BookingScreen() {
         loadRoom();
     }, [room_id]);
 
-    if (loading) return <Text>Loading...</Text>;
+     if (loading)
+        return (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#2E76FF" />
+          </View>
+        );
     if (error) return <Text>Error: {error}</Text>;
     if (!room) return <Text>Không tìm thấy phòng</Text>;
 
@@ -233,7 +239,7 @@ const styles = StyleSheet.create({
     /* ===== CONTAINER & LAYOUT CHÍNH ===== */
     container: {
         flex: 1,
-        backgroundColor: "#f8f9fa", // Đổi nền nhạt hơn cho hiện đại
+        backgroundColor: "#F8FAFF", 
     },
     keyboardContainer: {
         flex: 1,

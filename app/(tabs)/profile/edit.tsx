@@ -1,4 +1,6 @@
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import ButtonSubmit from "@/components/ButtonSubmit";
+import HeaderScreen from "@/components/HeaderScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -12,6 +14,12 @@ const COLOR = {
   grayWhite: "#EFEFEF",
 };
 
+const handleUpdate = () => {
+  router.push({
+    pathname: "/(tabs)/profile"
+  })
+}
+
 export default function EditProfileScreen() {
   const [name, setName] = useState("Hồng Phúc");
   const [phone, setPhone] = useState("0902986680");
@@ -22,11 +30,7 @@ export default function EditProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.topbar}>
-        <ButtonBackScreen />
-        <Text style={styles.topTitle}>Chỉnh sửa thông tin</Text>
-        <View style={{ width: 28 }} />
-      </View>
+     <HeaderScreen title="Thông tin của bạn" />
 
       {/* Avatar */}
       <View style={styles.center}>
@@ -102,9 +106,7 @@ export default function EditProfileScreen() {
           />
         </Field>
 
-        <TouchableOpacity style={styles.btn}>
-          <Text style={styles.btnText}>Cập nhật thông tin</Text>
-        </TouchableOpacity>
+        <ButtonSubmit title="Cập nhật thông tin" onPress={handleUpdate} />
       </View>
     </SafeAreaView>
   );
@@ -131,7 +133,7 @@ function Field({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#F8FAFF" },
   topbar: {
     flexDirection: "row",
     alignItems: "center",
@@ -182,5 +184,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  btnText: { color: "#fff", fontWeight: "700" },
+  btnText: { color: "#fff", fontWeight: "600" },
 });
