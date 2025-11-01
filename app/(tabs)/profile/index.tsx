@@ -25,6 +25,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        {/* headẻ */}
         <ButtonBackScreen />
         <View style={styles.avatarWrap}>
           <Image
