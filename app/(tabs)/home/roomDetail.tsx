@@ -5,13 +5,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  ActivityIndicator
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -31,7 +31,6 @@ export default function ChiTietPhong() {
     require("../../../assets/images/hotel1/4.jpg"),
     require("../../../assets/images/hotel1/5.jpg"),
   ];
-
 
   const { room_id } = useLocalSearchParams<{ room_id: string }>();
   const [room, setRoom] = useState<Room | null>(null);
