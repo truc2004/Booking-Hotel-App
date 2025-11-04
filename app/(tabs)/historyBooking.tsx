@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BookingCard from "../../components/BookingCard";
 import ButtonBackScreen from "@/components/ButtonBackScreen";
 import HeaderScreen from "@/components/HeaderScreen";
+import React from 'react';
 
 const COLOR = { blue: "#2E76FF", black: "#101010", gray: "#CFCFCF", grayWhite: "#EFEFEF" };
 

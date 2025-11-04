@@ -4,6 +4,7 @@ import { Room } from "@/types/room";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import React from 'react';
 import {
   ActivityIndicator,
   FlatList,

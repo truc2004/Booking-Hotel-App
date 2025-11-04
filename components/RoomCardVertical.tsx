@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -37,7 +38,7 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
         {/* Ảnh phòng */}
         <View style={styles.imageWrapper}>
           <Image
-            source={require("../assets/images/hotel2/1.jpg")}
+            source={{uri: room.images[0]}}
             style={styles.image}
           />
 

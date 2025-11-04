@@ -1,3 +1,4 @@
+import React from 'react';
 import { fetchRoomById } from "@/api/roomApi";
 import { Room } from "@/types/room";
 import { router, useLocalSearchParams } from "expo-router";

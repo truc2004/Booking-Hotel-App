@@ -1,5 +1,5 @@
-
 import { SafeAreaView } from "react-native-safe-area-context";
+import React from 'react';
 import {
     StyleSheet,
     Text,
@@ -7,7 +7,6 @@ import {
 import ButtonBottom from "@/components/ButtonBottom";
 import { router } from "expo-router";
 import HeaderScreen from "@/components/HeaderScreen";
-
 
 export default function ReceiptScreen() {
 
