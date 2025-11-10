@@ -85,7 +85,7 @@ export default function BookingCard({
 }
 
 const styles = StyleSheet.create({
-  safe: { marginBottom: 12 },
+  safe: {  },
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     borderColor: "#EFEFEF",
     elevation: 1,
   },
-  image: { width: "100%", height: 130 },
+  image: { width: "100%", height: 180,  },
   info: { padding: 12 },
   rowBetween: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   discount: { color: "#2E76FF", fontWeight: "600", fontSize: 12 },

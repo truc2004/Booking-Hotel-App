@@ -88,9 +88,7 @@ export default function HomeScreen() {
           <FlatList
             data={standardRooms}
             keyExtractor={(item) => item.room_id}
-            renderItem={({ item }) => <RoomCardVertical room={item} />}
-            horizontal
-            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => <RoomCard room={item} />}
             contentContainerStyle={{ paddingHorizontal: 6 }}
           />
         </View>

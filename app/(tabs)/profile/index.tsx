@@ -47,6 +47,7 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.container}>
       <HeaderScreen title="Hồ sơ" />
 
+
       <View style={styles.avatarWrap}>
         <Image
           source={{ uri: "https://i.pravatar.cc/160?img=12" }}
@@ -117,7 +118,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLOR.white },
+  container: { flex: 1, backgroundColor: "#F8FAFF" },
   avatarWrap: {
     alignSelf: "center",
     marginTop: 20,
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
   list: { paddingHorizontal: 16, marginTop: 20, gap: 10 },
   row: {
     height: 50,
-    backgroundColor: COLOR.white,
+    backgroundColor: "#EFEFEF",
     borderRadius: 12,
     paddingHorizontal: 12,
     flexDirection: "row",
@@ -155,6 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#F0F0F0",
+    
   },
   rowLeft: { flexDirection: "row", gap: 10, alignItems: "center" },
   rowText: { fontSize: 15, color: COLOR.black },

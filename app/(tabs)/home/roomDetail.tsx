@@ -233,6 +233,7 @@ export default function ChiTietPhong() {
           <View>
             {/* Hình đại diện với gradient overlay */}
             <View style={styles.imageContainer}>
+              <ButtonBackScreen />
               <Image
                 source={require("../../../assets/images/hotel1/1.jpg")}
                 style={styles.mainImage}
@@ -241,18 +242,18 @@ export default function ChiTietPhong() {
                 colors={['rgba(0,0,0,0.4)', 'transparent', 'rgba(0,0,0,0.6)']}
                 style={styles.imageGradient}
               />
-              <View style={styles.topBar}>
+              {/* <View style={styles.topBar}>
                 <ButtonBackScreen />
                 <TouchableOpacity style={styles.iconButton}>
                   <Ionicons name="heart-outline" size={24} color={COLOR.white} />
                 </TouchableOpacity>
-              </View>
+              </View> */}
               
               {/* Discount badge */}
-              <View style={styles.discountBadge}>
+              {/* <View style={styles.discountBadge}>
                 <Ionicons name="pricetag" size={16} color={COLOR.white} />
                 <Text style={styles.discountText}>-20%</Text>
-              </View>
+              </View> */}
             </View>
 
             {/* Thông tin chi tiết */}
@@ -321,16 +322,16 @@ export default function ChiTietPhong() {
             <Text style={styles.priceUnit}>/đêm</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={handleBooking}>
-          <LinearGradient
-            colors={[COLOR.primary, COLOR.secondary]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.bookButton}
-          >
+        <TouchableOpacity onPress={handleBooking} style={styles.bookButton}>
+          {/* <LinearGradient
+            // colors={[COLOR.primary, COLOR.secondary]}
+            // start={{ x: 0, y: 0 }}
+            // end={{ x: 1, y: 0 }}
+            
+          > */}
             <Text style={styles.bookButtonText}>Đặt phòng ngay</Text>
-            <Ionicons name="arrow-forward" size={20} color={COLOR.white} />
-          </LinearGradient>
+            {/* <Ionicons name="arrow-forward" size={20} color={COLOR.white} /> */}
+          {/* </LinearGradient> */}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -640,27 +641,29 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: COLOR.white,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: COLOR.lightGray + '50',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 10,
-  },
-  priceSection: {
-    flex: 1,
-  },
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  backgroundColor: COLOR.white,
+  paddingHorizontal: 16,
+  paddingVertical: 12,
+  borderTopWidth: 1,
+  borderTopColor: COLOR.lightGray + '50',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: -4 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 10,
+},
+priceSection: {
+  flex: 1,
+  justifyContent: 'center',
+},
+
   priceLabel: {
     color: COLOR.gray,
     fontSize: 13,
@@ -671,7 +674,7 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   priceValue: {
-    color: COLOR.black,
+    color: "#27ae60",
     fontWeight: '800',
     fontSize: 20,
   },
@@ -681,13 +684,17 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   bookButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    gap: 8,
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 12,
+  gap: 6,
+  minWidth: 160, 
+  backgroundColor: '#2E76FF'
+},
+
   bookButtonText: {
     color: COLOR.white,
     fontWeight: '700',
