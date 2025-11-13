@@ -1,6 +1,4 @@
 import { Redirect } from "expo-router";
-import React from 'react';
-
 export default function Index() {
-  return <Redirect href="/(tabs)/home" />; // Không dùng /index
+  return <Redirect href="/(auth)/sign-in" />;
 }

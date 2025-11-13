@@ -1,22 +1,20 @@
-import { useEffect, useState } from "react";
-import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import RoomCard from "../../../components/RoomCard";
-import { fetchRooms } from "../../../api/roomApi";
-import { Room } from "../../../types/room";
+import HeaderScreen from "@/components/HeaderScreen";
 import SearchAndFilterScreen from "@/components/SearchAndFilter";
 import { LinearGradient } from "expo-linear-gradient";
-import ButtonBackScreen from "@/components/ButtonBackScreen";
-import HeaderScreen from "@/components/HeaderScreen";
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { fetchRooms } from "../../../api/roomApi";
+import RoomCard from "../../../components/RoomCard";
+import { Room } from "../../../types/room";
 
 const PAGE_SIZE = 8;
 
@@ -74,16 +72,15 @@ export default function ListRoomScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingHorizontal: 12}}>
         <SearchAndFilterScreen />
 
-        <FlatList
-          data={currentRooms}
-          keyExtractor={(item) => item.room_id}
-          renderItem={({ item }) => <RoomCard room={item} />}
-          scrollEnabled={false}
-          contentContainerStyle={{ marginLeft: 7 }}
-        />
-
-        {/* Phân trang hiện đại */}
-        <View style={styles.paginationContainer}>
+       <FlatList
+  data={currentRooms}
+  keyExtractor={(item) => item.room_id}
+  renderItem={({ item }) => <RoomCard room={item} />}
+  showsVerticalScrollIndicator={false}
+  contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 20 }}
+  ListHeaderComponent={<SearchAndFilterScreen />}
+  ListFooterComponent={
+<View style={styles.paginationContainer}>
           <LinearGradient
             colors={["#4D90FE", "#2E76FF"]}
             start={{ x: 0, y: 0 }}
@@ -117,7 +114,10 @@ export default function ListRoomScreen() {
               <Text style={styles.navText}>›</Text>
             </TouchableOpacity>
           </LinearGradient>
-        </View>
+        </View>  }
+/>
+        {/* Phân trang hiện đại */}
+        
       </ScrollView>
     </SafeAreaView>
   );
