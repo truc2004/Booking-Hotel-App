@@ -1,4 +1,4 @@
-import { humainizeAuthError } from "@/src/auth/auth-errors";
+import { humanizeAuthError } from "@/src/auth/auth-errors";
 import { useAuth } from "@/src/auth/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
@@ -18,8 +18,9 @@ export default function SignIn() {
     try {
       setErr(null);
       await signIn(email.trim(), pass);
+      router.replace("/(tabs)/home");
     } catch (e: any) {
-      setErr(humainizeAuthError(e));
+      setErr(humanizeAuthError(e));
     }
   };
 
@@ -27,6 +28,15 @@ export default function SignIn() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={show.headerBack}>
+  <TouchableOpacity
+    onPress={() => router.replace("/(tabs)/home")}
+    style={{ flexDirection: "row", alignItems: "center" }}
+  >
+    <Ionicons name="chevron-back" size={22} color="#101010" />
+  </TouchableOpacity>
+</View>
+
       <View style={s.wrap}>
         <Image
           source={require("../../assets/images/LogoBookingApp.png")}
@@ -112,5 +122,17 @@ const s = StyleSheet.create({
   err: { color: "#DC2626", marginTop: 6, textAlign: "center" },
   primary: { backgroundColor: COLOR.blue, height: 52, borderRadius: 14, alignItems: "center", justifyContent: "center", marginTop: 6 },
   primaryText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  headerBack: {
+  paddingHorizontal: 16,
+  paddingTop: 8,
+  flexDirection: "row",
+  alignItems: "center",
+},
+headerBackText: {
+  fontSize: 14,
+  color: "#101010",
+  marginLeft: 4,
+},
+
   footer: { flexDirection: "row", justifyContent: "center", marginTop: 12 },
 });

@@ -17,19 +17,14 @@ export default function RootLayout() {
     if (loading) return;
 
     const inAuth = segments[0] === "(auth)";
-    const authScreen = segments[1]; // "sign-in" | "sign-up" | "verify" | "complete-profile" | ...
+    const authScreen = segments[1]; // "sign-in" | "sign-up" | ...
 
-    // Chưa login mà không ở (auth) -> bắt về sign-in
-    if (!user && !inAuth) {
-      router.replace("/(auth)/sign-in");
-      return;
-    }
+    // KHÔNG còn chặn !user nữa => guest vẫn vào được (tabs)/home
 
-    // Đã login mà đang ở group (auth)
+    // Đã login mà vẫn ở group (auth) -> đá ra profile
     if (user && inAuth) {
-      // CHỈ chặn sign-in & index, KHÔNG chặn sign-up/verify/complete-profile
-      if (authScreen === "sign-in" || !authScreen) {
-        router.replace("/(tabs)/home");
+      if (authScreen === "sign-in" || authScreen === "sign-up" || !authScreen) {
+        router.replace("/(tabs)/profile");
       }
     }
   }, [segments, user, loading]);
