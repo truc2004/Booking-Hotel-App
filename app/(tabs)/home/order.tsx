@@ -1,20 +1,37 @@
+import { fetchHotelById } from "@/api/hotelApi";
+import { fetchRoomById } from "@/api/roomApi";
 import ButtonBottom from "@/components/ButtonBottom";
 import HeaderScreen from "@/components/HeaderScreen";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { Hotel } from "@/types/hotel";
+import { Room } from "@/types/room";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
     Image,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View,
+    ActivityIndicator
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams<{
+        room_id: string; hotel_id: string; check_in: string; check_out: string;
+        adults: string; children: string; note: string;
+    }>();
+    const { room_id, hotel_id, check_in, check_out, adults, children, note } = params;
+
+    const [room, setRoom] = useState<Room | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [hotel, setHotel] = useState<Hotel | null>(null);
 
     const [form, setForm] = useState({
         name: "",
@@ -31,13 +48,47 @@ export default function BookingScreen() {
         citizenId: "",
     });
 
-     const handleInputChange = (key: string, value: string) => {
+
+    useEffect(() => {
+        if (!room_id) return;
+
+        const loadRoom = async () => {
+            try {
+                const data: Room = await fetchRoomById(room_id);
+                setRoom(data);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        const loadHotel = async () => {
+            try {
+                const data: Hotel = await fetchHotelById(hotel_id);
+                setHotel(data);
+            } catch (err: any) {
+                console.error(err);
+                setError(err.message || "Lỗi tải thông tin khách sạn");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadHotel();
+
+        loadRoom();
+    }, [room_id]);
+
+
+    const handleInputChange = (key: string, value: string) => {
         setForm({ ...form, [key]: value });
-       
+
         setErrors({ ...errors, [key]: "" });  // Xóa lỗi của ô đó khi người dùng nhập lại
     };
 
-     const handleBooking = () => {
+    const maxGuests = (room?.bed_count ?? 0) * 2
+    const handleBooking = () => {
+
         let newErrors: any = {};
 
         if (!form.name.trim()) newErrors.name = "Vui lòng nhập họ và tên";
@@ -61,6 +112,62 @@ export default function BookingScreen() {
         })
     }
 
+    // format ngay
+    const today = new Date();
+
+    const formatDate = (rawDate: any) => {
+        const date = new Date(rawDate);
+
+        return (
+            date.getDate().toString().padStart(2, "0") +
+            " th" +
+            (date.getMonth() + 1).toString().padStart(2, "0") +
+            ", " +
+            date.getFullYear()
+        );
+    };
+
+    const formattedToday = formatDate(today);
+    const formattedCheckIn = formatDate(check_in);
+    const formattedCheckOut = formatDate(check_out);
+    const totalGuests = parseInt(adults) + parseInt(children);
+
+    // Tính số ngày ở giữa check-in và check-out
+    const getTotalNights = (checkIn: string, checkOut: string) => {
+        const inDate = new Date(checkIn);
+        const outDate = new Date(checkOut);
+        const diffTime = Math.abs(outDate.getTime() - inDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    };
+
+    // Tính tổng tiền
+    let extraFee = 0;
+    const calculateTotal = (checkIn: string, checkOut: string) => {
+        if (!room) return 0; // nếu room chưa có dữ liệu
+
+        const nights = getTotalNights(checkIn, checkOut);
+
+        
+        if (totalGuests > (room.bed_count * 2)) {
+            extraFee = room.extra_fee_adult ?? 0;
+        }
+
+        const total = (room.price_per_night ?? 0) * nights + extraFee;
+        return total;
+    };
+
+    const totalNights = getTotalNights(check_in, check_out);
+    const totalAmount = room ? calculateTotal(check_in, check_out) : 0; 
+
+
+    if (loading)
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#2E76FF" />
+            </View>
+        );
+
     return (
         <SafeAreaView style={styles.container}>
             <HeaderScreen title="Thanh toán" />
@@ -70,28 +177,12 @@ export default function BookingScreen() {
                 <View style={styles.card}>
                     <Image
                         source={require("../../../assets/images/hotel1/1.jpg")}
-                        style={styles.image}
+                        style={[styles.image, { height: "100%" }]}
                     />
                     <View style={styles.cardInfo}>
-                        <Text style={styles.hotelName}>Harbor Haven Hideaway</Text>
-                        <Text style={styles.hotelLocation}>123 Nguyễn Kiện, Gò Vấp</Text>
-                        <Text style={styles.hotelPrice}>1.000.000đ / đêm</Text>
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Quy định phòng</Text>
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Số lượng người tối đa</Text>
-                        <Text style={styles.value}>6</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Phụ thu người lớn</Text>
-                        <Text style={styles.value}>1.000.000đ / đêm</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Phụ thu trẻ em</Text>
-                        <Text style={styles.value}>1.000.000đ / đêm</Text>
+                        <Text style={styles.hotelName}>{hotel?.name}</Text>
+                        <Text style={styles.hotelLocation}>{hotel?.addresses?.detailAddress}, {hotel?.addresses?.district}</Text>
+                        <Text style={styles.hotelPrice}>{room?.price_per_night?.toLocaleString()}₫ /đêm</Text>
                     </View>
                 </View>
 
@@ -100,29 +191,32 @@ export default function BookingScreen() {
                     <Text style={styles.sectionTitle}>Chi tiết đặt phòng</Text>
                     <View style={styles.row}>
                         <Text style={styles.label}>Ngày đặt</Text>
-                        <Text style={styles.value}>24 Th8, 2025 | 10:00</Text>
+                        <Text style={styles.value}>{formattedToday}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Nhận phòng</Text>
-                        <Text style={styles.value}>04 Th10, 2025</Text>
+                        <Text style={styles.value}>{formattedCheckIn} | {hotel?.check_in_time} </Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Trả phòng</Text>
-                        <Text style={styles.value}>03 Th11, 2025</Text>
+                        <Text style={styles.value}>{formattedCheckOut} | {hotel?.check_out_time}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Số khách</Text>
-                        <Text style={styles.value}>5 người</Text>
+                        <Text style={styles.value}>{totalGuests}</Text>
                     </View>
                 </View>
 
                 {/* === Thông tin người đặt === */}
-                 <View style={styles.section}>
+                <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Thông tin người đặt</Text>
 
                     {/* Họ và tên */}
-                    <Text style={styles.inputLabel}>Họ và tên</Text>
-                    {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+                    <View style={styles.labelRow}>
+                        <Text style={styles.inputLabel}>Họ và tên</Text>
+                        <Text style={styles.requiredMark}>*</Text>
+                    </View>
+                    {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
                     <TextInput
                         style={styles.input}
                         placeholder="Nhập họ và tên"
@@ -130,9 +224,13 @@ export default function BookingScreen() {
                         onChangeText={(t) => handleInputChange("name", t)}
                     />
 
+
                     {/* Email */}
-                    <Text style={styles.inputLabel}>Email</Text>
-                    {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+                    <View style={styles.labelRow}>
+                        <Text style={styles.inputLabel}>Email</Text>
+                        <Text style={styles.requiredMark}>*</Text>
+                    </View>
+                    {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
                     <TextInput
                         style={styles.input}
                         placeholder="Nhập email"
@@ -141,9 +239,13 @@ export default function BookingScreen() {
                         onChangeText={(t) => handleInputChange("email", t)}
                     />
 
+
                     {/* Số điện thoại */}
-                    <Text style={styles.inputLabel}>Số điện thoại</Text>
-                    {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
+                    <View style={styles.labelRow}>
+                        <Text style={styles.inputLabel}>Số điện thoại</Text>
+                        <Text style={styles.requiredMark}>*</Text>
+                    </View>
+                    {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
                     <TextInput
                         style={styles.input}
                         placeholder="Nhập số điện thoại"
@@ -151,6 +253,7 @@ export default function BookingScreen() {
                         value={form.phone}
                         onChangeText={(t) => handleInputChange("phone", t)}
                     />
+
 
                     {/* Giới tính */}
                     <Text style={styles.inputLabel}>Giới tính</Text>
@@ -177,8 +280,11 @@ export default function BookingScreen() {
                     </View>
 
                     {/* CCCD */}
-                    <Text style={styles.inputLabel}>Số CCCD/CMND</Text>
-                    {errors.citizenId ? <Text style={styles.errorText}>{errors.citizenId}</Text> : null}
+                    <View style={styles.labelRow}>
+                        <Text style={styles.inputLabel}>Số CCCD/CMND</Text>
+                        <Text style={styles.requiredMark}>*</Text>
+                    </View>
+                    {errors.citizenId && <Text style={styles.errorText}>{errors.citizenId}</Text>}
                     <TextInput
                         style={styles.input}
                         placeholder="Nhập số CCCD/CMND"
@@ -186,17 +292,18 @@ export default function BookingScreen() {
                         value={form.citizenId}
                         onChangeText={(t) => handleInputChange("citizenId", t)}
                     />
+
                 </View>
-                
+
                 {/* === Phương thức thanh toán === */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Phương thức thanh toán</Text>
                     <View style={styles.paymentRow}>
                         <View style={styles.paymentIcon} />
-                        <Text style={styles.paymentText}>Tiền mặt (Cash)</Text>
-                        <TouchableOpacity>
+                        <Text style={styles.paymentText}>Thanh toán ngân hàng</Text>
+                        {/* <TouchableOpacity>
                             <Text style={styles.changeText} onPress={handleChangePayment}>Thay đổi</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
 
@@ -204,22 +311,24 @@ export default function BookingScreen() {
                 <View style={styles.amountCard}>
                     <View style={styles.amountRow}>
                         <Text style={styles.amountLabel}>Giá phòng</Text>
-                        <Text style={styles.amountValue}>1.000.000đ</Text>
+                        <Text style={styles.amountValue}>{room?.price_per_night.toLocaleString()}đ</Text>
                     </View>
                     <View style={styles.amountRow}>
                         <Text style={styles.amountLabel}>Phụ thu</Text>
-                        <Text style={styles.amountValue}>150.000đ</Text>
+                        <Text style={styles.amountValue}>{extraFee.toLocaleString()}đ</Text>
                     </View>
                     <View style={styles.totalRow}>
                         <Text style={styles.totalLabel}>Tổng cộng</Text>
-                        <Text style={styles.totalValue}>1.150.000đ</Text>
+                        <Text style={styles.totalValue}>{totalAmount.toLocaleString()}đ</Text>
                     </View>
                 </View>
 
-                
+
             </ScrollView>
 
+            {/* button */}
             <ButtonBottom title="Xác nhận & Thanh toán" onPress={handleBooking} />
+
         </SafeAreaView>
     );
 }
@@ -239,6 +348,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 6,
         elevation: 3,
+        alignItems: "flex-start",
     },
     image: { width: 120, height: 120 },
     cardInfo: { flex: 1, padding: 14, justifyContent: "space-between" },
@@ -272,6 +382,19 @@ const styles = StyleSheet.create({
     value: { fontSize: 13, color: "#666" },
 
     // === Input có label ===
+    labelRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+        marginTop: 16,
+    },
+
+    requiredMark: {
+        color: "red",
+        fontSize: 16,
+        fontWeight: "700",
+    },
+
     inputLabel: {
         fontSize: 13,
         fontWeight: "500",
@@ -356,13 +479,11 @@ const styles = StyleSheet.create({
     changeText: { fontSize: 13, color: "#007AFF", fontWeight: "500" },
 
     // hiển thị lỗi
-     errorText: {
+    errorText: {
         color: "#FF3B30",
         fontSize: 13,
         marginTop: 6,
         fontWeight: "500",
     },
-
-
 
 });

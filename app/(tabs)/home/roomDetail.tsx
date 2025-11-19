@@ -56,7 +56,7 @@ export default function ChiTietPhong() {
     if (!room) return;
     router.push({
       pathname: "/(tabs)/home/booking",
-      params: { room_id: room.room_id, hotel_id: room.hotel_id }
+      params: { room_id: room.room_id, hotel_id: room.hotel_id, rate: room.rate }
     });
   };
 

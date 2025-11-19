@@ -1,7 +1,7 @@
 import { Hotel } from "@/types/hotel";
 
 const API_URL ="https://hotel-mobile-be.onrender.com/hotel/hotels"; 
-// const API_URL = "http://localhost:3001/hotel/hotels";
+// const API_URL = "http://localhost:3002/hotel/hotels";
 
 export async function fetchHotelById(hotel_id: string): Promise<Hotel> {
   const res = await fetch(`${API_URL}/hotelDetail?hotel_id=${hotel_id}`);

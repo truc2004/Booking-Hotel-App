@@ -1,7 +1,7 @@
 import { Review } from "../types/review";
 
-const API_URL ="https://hotel-mobile-be.onrender.com/hotel/reviews"; 
-// const API_URL = "http://localhost:3001/hotel/reviews";
+const API_URL ="https://hotel-mobile-be.onrender.com/hotel/reviews";  // link deploy
+// const API_URL = "http://localhost:3002/hotel/reviews"; // link local
 
 
 export async function fetchReviews(): Promise<Review[]> {

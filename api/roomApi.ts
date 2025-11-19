@@ -1,7 +1,7 @@
 import { Room } from "../types/room";
 
 const API_URL ="https://hotel-mobile-be.onrender.com/hotel/rooms"; 
-// const API_URL ="http://localhost:3001/hotel/rooms";
+// const API_URL ="http://localhost:3002/hotel/rooms";
 
 export async function fetchRooms(): Promise<Room[]> {
   const res = await fetch(API_URL);

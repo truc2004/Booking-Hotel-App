@@ -17,18 +17,21 @@ import {
     KeyboardAvoidingView,
     ActivityIndicator,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker"; 
-import { LinearGradient } from 'expo-linear-gradient'; 
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { LinearGradient } from 'expo-linear-gradient';
 import ButtonBackScreen from "@/components/ButtonBackScreen";
 import ButtonBottom from "@/components/ButtonBottom";
+import { Hotel } from '@/types/hotel';
+import { fetchHotelById } from '@/api/hotelApi';
 
 const BUTTON_HEIGHT = 120; // Giữ nguyên để đảm bảo khoảng trống
 
 export default function BookingScreen() {
-    const { room_id, hotel_id } = useLocalSearchParams<{ room_id: string; hotel_id: string }>();
+    const { room_id, hotel_id, rate } = useLocalSearchParams<{ room_id: string; hotel_id: string, rate: string }>();
     const [room, setRoom] = useState<Room | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [hotel, setHotel] = useState<Hotel | null>(null);
 
     // States cho ngày
     const today = new Date(); // lấy ngày hiện tại
@@ -42,6 +45,7 @@ export default function BookingScreen() {
     // States cho số lượng người
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
+
 
     // State cho note
     const [note, setNote] = useState("");
@@ -59,14 +63,32 @@ export default function BookingScreen() {
                 setLoading(false);
             }
         };
+        const loadHotel = async () => {
+            try {
+                const data: Hotel = await fetchHotelById(hotel_id);
+                setHotel(data);
+            } catch (err: any) {
+                console.error(err);
+                setError(err.message || "Lỗi tải thông tin khách sạn");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadHotel();
+
         loadRoom();
     }, [room_id]);
 
-     if (loading)
+    // số lượng người
+    const maxGuests = ((room?.bed_count ?? 0) * 2) + 1;
+    const totalGuests = adults + children;
+
+    if (loading)
         return (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#2E76FF" />
-          </View>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#2E76FF" />
+            </View>
         );
     if (error) return <Text>Error: {error}</Text>;
     if (!room) return <Text>Không tìm thấy phòng</Text>;
@@ -89,9 +111,19 @@ export default function BookingScreen() {
         setCheckOutDate(currentDate);
     };
 
-    const incrementAdults = () => setAdults(adults + 1);
+    const incrementAdults = () => {
+        if (totalGuests < maxGuests) {
+            setAdults(adults + 1);
+        }
+    };
+
     const decrementAdults = () => setAdults(adults > 1 ? adults - 1 : 1);
-    const incrementChildren = () => setChildren(children + 1);
+    const incrementChildren = () => {
+        if (totalGuests < maxGuests) {
+            setChildren(children + 1);
+        }
+    };
+
     const decrementChildren = () => setChildren(children > 0 ? children - 1 : 0);
 
     const formatDate = (date: Date) => {
@@ -101,18 +133,27 @@ export default function BookingScreen() {
     const handleBooking = () => {
         router.push({
             pathname: "/(tabs)/home/order",
-        })
-    }
+            params: {
+                room_id,
+                hotel_id,
+                check_in: checkInDate.toISOString(),
+                check_out: checkOutDate.toISOString(),
+                adults: adults.toString(),
+                children: children.toString(),
+                note
+            }
+        });
+    };
 
     return (
-    <SafeAreaView style={[styles.container, { flex: 1 }]} edges={['top']}>
-            <KeyboardAvoidingView 
+        <SafeAreaView style={[styles.container, { flex: 1 }]} edges={['top']}>
+            <KeyboardAvoidingView
                 style={styles.keyboardContainer}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 keyboardVerticalOffset={Platform.OS === "ios" ? BUTTON_HEIGHT : 0} // Sửa offset: BUTTON_HEIGHT cho iOS để tính đến bottom bar, 0 cho Android
             >
-                <ScrollView 
-                    style={styles.scrollContainer} 
+                <ScrollView
+                    style={styles.scrollContainer}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: BUTTON_HEIGHT }}
                     contentInsetAdjustmentBehavior="automatic"
@@ -124,7 +165,7 @@ export default function BookingScreen() {
                         <ButtonBackScreen />
 
                         <Image
-                            source={require("../../../assets/images/hotel1/1.jpg")} 
+                            source={require("../../../assets/images/hotel1/1.jpg")}
                             style={styles.roomImage}
                             resizeMode="cover"
                         />
@@ -135,12 +176,12 @@ export default function BookingScreen() {
                         <View style={styles.discountRating}>
                             <Text style={styles.discount}>10% Off</Text>
                             <View style={styles.rating}>
-                                <Image source={require("../../../assets/images/icon/star.png")} style={styles.star}/>
-                                <Text style={styles.ratingText}>4.5 (34 reviews)</Text>
+                                <Image source={require("../../../assets/images/icon/star.png")} style={styles.star} />
+                                <Text style={styles.ratingText}>{rate}</Text>
                             </View>
                         </View>
-                        <Text style={styles.roomName}>HarborHaven Hideaway</Text>
-                        <Text style={styles.roomAddress}>123 Hoa Sứ, Phú Nhuận</Text>
+                        <Text style={styles.roomName}>{hotel?.name}</Text>
+                        <Text style={styles.roomAddress}>{hotel?.addresses?.detailAddress}, {hotel?.addresses?.district}</Text>
                         <Text style={styles.price}>Giá: {room.price_per_night?.toLocaleString()}₫ /đêm</Text>
                     </View>
 
@@ -151,7 +192,7 @@ export default function BookingScreen() {
                             <Text style={styles.sectionTitle}>Check In</Text>
                             <TouchableOpacity style={styles.dateButton} onPress={() => setShowCheckInPicker(true)}>
                                 <Text style={styles.dateText}>{formatDate(checkInDate)}</Text>
-                                <Image source={require("../../../assets/images/icon/calendar.png")} style={styles.calendarIcon}/>
+                                <Image source={require("../../../assets/images/icon/calendar.png")} style={styles.calendarIcon} />
                             </TouchableOpacity>
                             {showCheckInPicker && (
                                 <DateTimePicker
@@ -169,7 +210,7 @@ export default function BookingScreen() {
                             <Text style={styles.sectionTitle}>Check Out</Text>
                             <TouchableOpacity style={styles.dateButton} onPress={() => setShowCheckOutPicker(true)}>
                                 <Text style={styles.dateText}>{formatDate(checkOutDate)}</Text>
-                                <Image source={require("../../../assets/images/icon/calendar.png")} style={styles.calendarIcon}/>
+                                <Image source={require("../../../assets/images/icon/calendar.png")} style={styles.calendarIcon} />
                             </TouchableOpacity>
                             {showCheckOutPicker && (
                                 <DateTimePicker
@@ -185,6 +226,12 @@ export default function BookingScreen() {
                         {/* Số lượng người */}
                         <View style={styles.guestsSection}>
                             <Text style={styles.sectionTitle}>Số lượng người</Text>
+                            {totalGuests >= maxGuests && (
+                                <Text style={{ color: "#007AFF", marginTop: 10 }}>
+                                    Tổng số người đã đạt mức tối đa của phòng này
+                                </Text>
+                            )}
+
                             <View style={styles.guestRow}>
                                 <Text style={styles.guestLabel}>Người lớn</Text>
                                 <View style={styles.counter}>
@@ -192,12 +239,12 @@ export default function BookingScreen() {
                                         <Text style={styles.counterText}>-</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.counterValue}>{adults}</Text>
-                                    <TouchableOpacity style={styles.counterButton} onPress={incrementAdults}>
+                                    <TouchableOpacity style={styles.counterButton} onPress={incrementAdults} disabled={totalGuests >= maxGuests}>
                                         <Text style={styles.counterText}>+</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={{borderBottomWidth: 1, borderBottomColor: "#e9ecef", marginVertical: 10}}></View>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: "#e9ecef", marginVertical: 10 }}></View>
                             <View style={styles.guestRow}>
                                 <Text style={styles.guestLabel}>Trẻ em</Text>
                                 <View style={styles.counter}>
@@ -205,7 +252,7 @@ export default function BookingScreen() {
                                         <Text style={styles.counterText}>-</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.counterValue}>{children}</Text>
-                                    <TouchableOpacity style={styles.counterButton} onPress={incrementChildren}>
+                                    <TouchableOpacity style={styles.counterButton} onPress={incrementChildren} disabled={totalGuests >= maxGuests}>
                                         <Text style={styles.counterText}>+</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -230,7 +277,7 @@ export default function BookingScreen() {
                 </ScrollView>
 
                 {/* Nút Continue cố định ở dưới */}
-                <ButtonBottom onPress={handleBooking} title={"Đặt phòng"}/>
+                <ButtonBottom onPress={handleBooking} title={"Đặt phòng"} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -240,7 +287,7 @@ const styles = StyleSheet.create({
     /* ===== CONTAINER & LAYOUT CHÍNH ===== */
     container: {
         flex: 1,
-        backgroundColor: "#F8FAFF", 
+        backgroundColor: "#F8FAFF",
     },
     keyboardContainer: {
         flex: 1,
@@ -424,7 +471,7 @@ const styles = StyleSheet.create({
     guestRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",   
+        alignItems: "center",
     },
     guestLabel: {
         fontSize: 14,
