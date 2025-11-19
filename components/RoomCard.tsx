@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from 'react';
+import React, { use, useEffect } from 'react';
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -11,6 +11,8 @@ import {
   View,
 } from "react-native";
 import { Room } from "../types/room";
+import { Hotel } from "@/types/hotel";
+import { fetchHotelById } from "@/api/hotelApi";
 
 const { width } = Dimensions.get("window");
 
@@ -20,6 +22,25 @@ type RoomCardProps = {
 
 export default function RoomCard({ room }: RoomCardProps) {
   const [favorited, setFavorited] = useState(false);
+  const [hotel, setHotel] = useState<Hotel | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadHotel = async () => {
+      try {
+        const data: Hotel = await fetchHotelById(room.hotel_id);
+        setHotel(data);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Lỗi tải thông tin khách sạn");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHotel();
+  }, [room]);
 
   const handleViewDetail = () => {
     router.push(`/(tabs)/home/roomDetail?room_id=${room.room_id}`);
@@ -39,7 +60,7 @@ export default function RoomCard({ room }: RoomCardProps) {
         {/* Ảnh phòng */}
         <View style={styles.imageWrapper}>
           <Image
-            source={require("../assets/images/hotel1/1.jpg")}
+            source={{ uri: room.images[0] }}
             style={styles.image}
           />
           {/* Nút trái tim */}
@@ -56,11 +77,11 @@ export default function RoomCard({ room }: RoomCardProps) {
         <View style={styles.info}>
           <View style={styles.headerInfo}>
             <Text style={styles.name} numberOfLines={1}>
-              Golden Valley
+              {hotel?.name}
             </Text>
             <View style={styles.rating}>
               <Ionicons name="star" size={14} color="#FFD700" />
-              <Text style={styles.ratingText}>4.9</Text>
+              <Text style={styles.ratingText}>{room.rate}</Text>
             </View>
           </View>
 
@@ -70,7 +91,7 @@ export default function RoomCard({ room }: RoomCardProps) {
               style={styles.iconMap}
             />
             <Text style={styles.locationText} numberOfLines={1}>
-              Vũng Tàu, Hồ Chí Minh
+              {hotel?.addresses?.detailAddress}, {hotel?.addresses?.district}
             </Text>
           </View>
 

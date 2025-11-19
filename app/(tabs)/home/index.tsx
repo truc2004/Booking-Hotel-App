@@ -15,6 +15,7 @@ import { fetchRooms } from "../../../api/roomApi";
 import { Room } from "../../../types/room";
 import { router } from "expo-router";
 import SearchAndFilterScreen from "@/components/SearchAndFilter";
+import { Review } from "@/types/review";
 
 export default function HomeScreen() {
   const [rooms, setRooms] = useState<Room[] | null>(null);
@@ -22,7 +23,7 @@ export default function HomeScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadDataRoom = async () => {
       try {
         const data = await fetchRooms();
         setRooms(data);
@@ -32,7 +33,7 @@ export default function HomeScreen() {
         setLoading(false);
       }
     };
-    loadData();
+    loadDataRoom();
   }, []);
 
   if (loading)

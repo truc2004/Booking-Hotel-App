@@ -10,4 +10,6 @@ export interface Room {
   created_at: string;
   updated_at: string;
   status: "available" | "unavailable";
+  rate: number,
+  bed_count: number
 }

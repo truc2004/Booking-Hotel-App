@@ -1,25 +1,24 @@
+import { fetchReviewsByRoom } from "@/api/reviewApi";
 import { fetchRoomById } from "@/api/roomApi";
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import { Review } from "@/types/review";
 import { Room } from "@/types/room";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
 
-  View,
-
-  Dimensions
-
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
@@ -51,6 +50,7 @@ export default function ChiTietPhong() {
   const [room, setRoom] = useState<Room | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<Review[] | null>(null);
 
   const handleBooking = () => {
     if (!room) return;
@@ -73,6 +73,19 @@ export default function ChiTietPhong() {
         setLoading(false);
       }
     };
+
+    const loadReview = async () => {
+      try {
+        const data = await fetchReviewsByRoom(room_id);
+        setReviews(data)
+      }  catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadReview();
     loadRoom();
   }, [room_id]);
 
@@ -84,7 +97,7 @@ export default function ChiTietPhong() {
       </View>
     );
 
-  const reviews = [
+  const reviews_test = [
     {
       id: 1,
       name: "Ngọc Trâm",
@@ -131,8 +144,7 @@ export default function ChiTietPhong() {
               <Text style={styles.sectionTitle}>Mô tả chi tiết</Text>
             </View>
             <Text style={styles.description}>
-              Căn phòng được thiết kế hiện đại, đầy đủ tiện nghi với ánh sáng tự nhiên.
-              Rất phù hợp cho các cặp đôi hoặc gia đình nhỏ. Bao gồm bữa sáng miễn phí.
+             {room?.description}
             </Text>
           </View>
 
@@ -199,7 +211,7 @@ export default function ChiTietPhong() {
             </View>
           </View>
 
-          {reviews.map((r) => (
+          {reviews_test.map((r) => (
             <View key={r.id} style={styles.reviewCard}>
               <View style={styles.reviewHeader}>
                 <Image source={{ uri: r.avatar }} style={styles.reviewAvatar} />
