@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RoomCard from "../../../components/RoomCard";
@@ -38,61 +37,67 @@ export default function HomeScreen() {
 
   if (loading)
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#2E76FF" />
       </View>
     );
+
   if (error) return <Text style={styles.error}>Lỗi: {error}</Text>;
 
   const hotRooms = rooms ? rooms.slice(0, 5) : [];
-  const standardRooms = rooms ? rooms.slice(5, 15) : [];
+  const standardRooms = rooms ? rooms.slice(5, 20) : [];
 
   const handleViewListRoom = () => {
     router.push("/home/listRoom");
-  }
-
+  };
 
   return (
-    <SafeAreaView style={[styles.container, { flex: 1 }]} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Thanh tìm kiếm */}
-        <SearchAndFilterScreen />
+    <SafeAreaView style={[styles.container]}>
 
-        {/* Phòng nổi bật */}
-        <View style={styles.section}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Phòng nổi bật</Text>
-            <TouchableOpacity onPress={handleViewListRoom}>
-              <Text style={styles.textBule}>Tất cả</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={hotRooms}
-            renderItem={({ item }) => <RoomCardVertical room={item} />}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.room_id}
-            contentContainerStyle={{ paddingHorizontal: 6 }}
-          />
+      {/* Dùng 1 FlatList duy nhất */}
+      <FlatList
+        data={standardRooms}
+        keyExtractor={(item) => item.room_id}
+        renderItem={({ item }) => <RoomCard room={item} />}
+        contentContainerStyle={{ paddingHorizontal: 6 }}
+        showsVerticalScrollIndicator={false}
 
-        </View>
+        ListHeaderComponent={
+          <>
+            {/* Thanh tìm kiếm */}
+            <SearchAndFilterScreen />
 
-        {/* Danh sách phòng */}
-        <View style={styles.section}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Phòng gần bạn</Text>
-            <TouchableOpacity onPress={handleViewListRoom}>
-              <Text style={styles.textBule}>Tất cả</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={standardRooms}
-            keyExtractor={(item) => item.room_id}
-            renderItem={({ item }) => <RoomCard room={item} />}
-            contentContainerStyle={{ paddingHorizontal: 6 }}
-          />
-        </View>
-      </ScrollView>
+            {/* Phòng nổi bật */}
+            <View style={styles.section}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.sectionTitle}>Phòng nổi bật</Text>
+                <TouchableOpacity onPress={handleViewListRoom}>
+                  <Text style={styles.textBule}>Tất cả</Text>
+                </TouchableOpacity>
+              </View>
+
+              <FlatList
+                data={hotRooms}
+                renderItem={({ item }) => (
+                  <RoomCardVertical room={item} />
+                )}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.room_id}
+                contentContainerStyle={{ paddingHorizontal: 6 }}
+              />
+            </View>
+
+            {/* Phòng gần bạn */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.sectionTitle}>Phòng gần bạn</Text>
+              <TouchableOpacity onPress={handleViewListRoom}>
+                <Text style={styles.textBule}>Tất cả</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -102,28 +107,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8FAFF",
     paddingHorizontal: 15,
-
   },
   error: {
     color: "red",
     textAlign: "center",
     marginTop: 40,
   },
-
-  // --- Sections ---
   section: {
     marginBottom: 28,
   },
   titleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignContent: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     height: 50,
-
   },
   textBule: {
-    color: '#2E76FF'
+    color: "#2E76FF",
   },
   sectionTitle: {
     fontSize: 20,
