@@ -21,7 +21,7 @@ export default function SignUp() {
     try {
       setErr(null);
       await signUp(name.trim(), email.trim(), pass);
-      router.push("/(auth)/verify");
+      router.push("/(auth)/complete-profile");
     } catch (e) {
       setErr(humanizeAuthError(e));
     }
