@@ -1,14 +1,13 @@
-import ButtonBackScreen from "@/components/ButtonBackScreen";
 import HeaderScreen from "@/components/HeaderScreen";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -30,8 +29,15 @@ const OptionItem: React.FC<OptionItemProps> = ({ label, selected, onPress }) => 
     </Text>
   </TouchableOpacity>
 );
-
+const SORT_OPTIONS = [
+  { key: "all", label: "All" },
+  { key: "popular", label: "Popular" },
+  { key: "nearby", label: "Near by" },
+  { key: "price_low", label: "Price (low)" },
+  { key: "price_high", label: "Price (high)" },
+];
 export default function FilterScreen() {
+    const [sortBy, setSortBy] = useState<"all" | "popular" | "nearby" | "price_low" | "price_high">("all");
   const [reviewRating, setReviewRating] = useState("4.5+");
   const [facilities, setFacilities] = useState(["All"]);
   const [bedrooms, setBedrooms] = useState(["1+"]);
@@ -54,19 +60,23 @@ export default function FilterScreen() {
     );
   };
 
-  const handleReset = () => {
-    setFacilities(["All"]);
-    setBedrooms(["1+"]);
-    setMinPrice(100000);
-    setMaxPrice(500000);
-    setReviewRating("4.5+");
-  };
+const handleReset = () => {
+  setSortBy("all");
+  setFacilities(["All"]);
+  setBedrooms(["1+"]);
+  setMinPrice(100000);
+  setMaxPrice(500000);
+  setReviewRating("4.5+");
+};
 
-  const handleApply = () => {
-    router.push({
-      pathname: "/(tabs)/home/listRoom"
-    })
-  }
+
+const handleApply = () => {
+  router.push({
+    pathname: "/(tabs)/home/listRoom",
+    params: { sort: sortBy },  // tạm thời chỉ gửi query, chưa cần dùng
+  });
+};
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,6 +87,36 @@ export default function FilterScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
       >
+          {/* SORT BY */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Sort by</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.sortScroll}
+          >
+            {SORT_OPTIONS.map((opt) => {
+              const active = sortBy === opt.key;
+              return (
+                <TouchableOpacity
+                  key={opt.key}
+                  style={[styles.sortChip, active && styles.sortChipActive]}
+                  onPress={() => setSortBy(opt.key)}
+                  activeOpacity={0.8}
+                >
+                  <Text
+                    style={[
+                      styles.sortChipText,
+                      active && styles.sortChipTextActive,
+                    ]}
+                  >
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
         {/* PRICE RANGE */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Khoảng giá</Text>
@@ -322,4 +362,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+    sortScroll: {
+    flexDirection: "row",
+    paddingTop: 4,
+  },
+  sortChip: {
+    paddingHorizontal: 16,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  sortChipActive: {
+    backgroundColor: "#2E76FF",
+    borderColor: "#2E76FF",
+  },
+  sortChipText: {
+    fontSize: 14,
+    color: "#64748B",
+    fontWeight: "500",
+  },
+  sortChipTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+
 });
