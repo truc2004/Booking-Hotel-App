@@ -17,10 +17,12 @@ import { router } from "expo-router";
 import SearchAndFilterScreen from "@/components/SearchAndFilter";
 import { Review } from "@/types/review";
 
+
 export default function HomeScreen() {
   const [rooms, setRooms] = useState<Room[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+ 
 
   useEffect(() => {
     const loadDataRoom = async () => {

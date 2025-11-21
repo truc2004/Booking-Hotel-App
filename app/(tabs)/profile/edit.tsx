@@ -1,11 +1,15 @@
-import ButtonBackScreen from "@/components/ButtonBackScreen";
+
 import ButtonSubmit from "@/components/ButtonSubmit";
 import HeaderScreen from "@/components/HeaderScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "@/src/auth/auth-store";
+import { accountApi } from "@/api/accountApi";
+import type { Account } from "@/types/account";
 
 const COLOR = {
   blue: "#2E76FF",
@@ -14,29 +18,87 @@ const COLOR = {
   grayWhite: "#EFEFEF",
 };
 
-const handleUpdate = () => {
-  router.push({
-    pathname: "/(tabs)/profile"
-  })
-}
-
 export default function EditProfileScreen() {
-  const [name, setName] = useState("Hồng Phúc");
-  const [phone, setPhone] = useState("0902986680");
-  const [email, setEmail] = useState("example@gmail.com");
-  const [dob, setDob] = useState("20/12/2000");
-  const [gender, setGender] = useState("Female");
+  const { user } = useAuth(); 
+  
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [account, setAccount] = useState<Account | null>(null);
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Lấy thông tin từ DB theo email
+  useEffect(() => {
+    const fetchUserFromDb = async () => {
+      try {
+        if (!user?.email) {
+          setLoading(false);
+          return;
+        }
+
+        const acc = await accountApi.findByEmail(user.email);
+
+        setAccount(acc);
+        setName(acc.user_name || "");
+        setPhone(acc.phone || "");
+        setEmail(acc.email || "");
+      } catch (err) {
+        console.log("Error load account:", err);
+        Alert.alert("Lỗi", "Không tải được thông tin tài khoản.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserFromDb();
+  }, [user?.email]);
+
+  const handleUpdate = async () => {
+    try {
+      if (!account) return;
+
+      setLoading(true);
+
+      const updated = await accountApi.updateAccount(account.account_id, {
+        user_name: name,
+        phone: phone,
+        email: email,
+      });
+
+      setAccount(updated);
+      Alert.alert("Thành công", "Đã cập nhật thông tin vào cơ sở dữ liệu.");
+      router.push({ pathname: "/(tabs)/profile" });
+    } catch (err) {
+      console.log("Error update account:", err);
+      Alert.alert("Lỗi", "Không thể cập nhật thông tin. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <HeaderScreen title="Thông tin của bạn" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Đang tải thông tin...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-     <HeaderScreen title="Thông tin của bạn" />
+      <HeaderScreen title="Thông tin của bạn" />
 
       {/* Avatar */}
       <View style={styles.center}>
         <View style={styles.avatarWrap}>
           <Image
-            source={{ uri: "https://i.pravatar.cc/160?img=12" }}
+            source={{ uri: "https://cdn2.fptshop.com.vn/small/avatar_trang_1_cd729c335b.jpg" }}
             style={styles.avatar}
           />
           <View style={styles.avatarEdit}>
@@ -57,14 +119,7 @@ export default function EditProfileScreen() {
           />
         </Field>
 
-        <Field
-          label="Số điện thoại"
-          right={
-            <TouchableOpacity>
-              <Text style={styles.link}>Change</Text>
-            </TouchableOpacity>
-          }
-        >
+        <Field label="Số điện thoại">
           <TextInput
             value={phone}
             onChangeText={setPhone}
@@ -83,26 +138,7 @@ export default function EditProfileScreen() {
             keyboardType="email-address"
             placeholder="Enter email"
             placeholderTextColor={COLOR.gray}
-          />
-        </Field>
-
-        <Field label="Ngày sinh">
-          <TextInput
-            value={dob}
-            onChangeText={setDob}
-            style={styles.input}
-            placeholder="DD/MM/YYYY"
-            placeholderTextColor={COLOR.gray}
-          />
-        </Field>
-
-        <Field label="Giới tính">
-          <TextInput
-            value={gender}
-            onChangeText={setGender}
-            style={styles.input}
-            placeholder="Male / Female"
-            placeholderTextColor={COLOR.gray}
+            autoCapitalize="none"
           />
         </Field>
 
@@ -141,7 +177,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     height: 44,
   },
-  topTitle: { fontSize: 18, fontWeight: "600", color: "#101010"},
+  topTitle: { fontSize: 18, fontWeight: "600", color: "#101010" },
   center: { alignItems: "center", marginVertical: 12 },
   avatarWrap: { position: "relative" },
   avatar: { width: 96, height: 96, borderRadius: 48 },
@@ -185,4 +221,30 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   btnText: { color: "#fff", fontWeight: "600" },
+
+  genderRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  genderOption: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#CFCFCF",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EFEFEF",
+  },
+  genderOptionActive: {
+    borderColor: COLOR.blue,
+    backgroundColor: "#E0ECFF",
+  },
+  genderText: {
+    color: "#101010",
+  },
+  genderTextActive: {
+    color: COLOR.blue,
+    fontWeight: "600",
+  },
 });
