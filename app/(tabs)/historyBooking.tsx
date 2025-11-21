@@ -1,268 +1,177 @@
-// import { Ionicons } from "@expo/vector-icons";
-// import { router, useLocalSearchParams } from "expo-router";
-// import { useState, useEffect } from "react";
-// import { 
-//   FlatList, 
-//   StyleSheet, 
-//   Text, 
-//   TouchableOpacity, 
-//   View, 
-//   Image,
-//   Dimensions,
+
+// import React, { useEffect, useMemo, useState } from "react";
+// import {
 //   ActivityIndicator,
+//   FlatList,
+//   StyleSheet,
+//   Text,
+//   TouchableOpacity,
+//   View,
 // } from "react-native";
 // import { SafeAreaView } from "react-native-safe-area-context";
+
+// import BookingCard from "@/components/BookingCard";
 // import HeaderScreen from "@/components/HeaderScreen";
-// import React from 'react';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// const { width } = Dimensions.get('window');
+// import { accountApi } from "@/api/accountApi";
+// import { bookingApi } from "@/api/bookingApi";
+// import { fetchRoomById } from "@/api/roomApi";       // <- THÊM DÒNG NÀY
+// import { useAuth } from "@/src/auth/auth-store";
+// import type { Booking } from "@/types/booking";
+// import type { Room } from "@/types/room";           // <- THÊM DÒNG NÀY
+// import axios from "axios";
 
-// const COLOR = {
-//   primary: "#2E76FF",
-//   secondary: "#5B9EFF",
-//   black: "#1A1A1A",
-//   darkGray: "#4A4A4A",
-//   gray: "#8E8E93",
-//   lightGray: "#C7C7CC",
-//   background: "#F8FAFF",
-//   white: "#FFFFFF",
-//   success: "#34C759",
-//   warning: "#FF9500",
-//   danger: "#FF3B30",
-//   gold: "#FFD700",
+// type TabKey = "upcoming" | "completed" | "cancelled";
+
+// const TAB_LABELS: Record<TabKey, string> = {
+//   upcoming: "Đang đặt",
+//   completed: "Hoàn thành",
+//   cancelled: "Đã hủy",
 // };
 
-// // Mapping key tiếng Anh -> nhãn hiển thị tiếng Việt
-// const TAB_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-//   upcoming: { label: "Đang đặt", icon: "time-outline", color: COLOR.warning },
-//   completed: { label: "Hoàn thành", icon: "checkmark-circle-outline", color: COLOR.success },
-//   cancelled: { label: "Đã hủy", icon: "close-circle-outline", color: COLOR.danger },
-// };
+// interface GroupedBookings {
+//   upcoming: Booking[];
+//   completed: Booking[];
+//   cancelled: Booking[];
+// }
 
-// // Dữ liệu sample
-// const DATA = {
-//   upcoming: [
-//     { 
-//       id: 1, 
-//       name: "GoldenValley", 
-//       location: "123 Nguyễn Kiệm, Gò Vấp", 
-//       price: 150, 
-//       rating: 4.9, 
-//       image: require("../../assets/images/hotel1/1.jpg"),
-//       checkIn: "10 Nov 2024",
-//       checkOut: "12 Nov 2024",
-//       guests: 2,
-//       nights: 2,
-//       roomId: "room_001",
-//       hotelId: "hotel_001",
-//     },
-//     { 
-//       id: 2, 
-//       name: "Sunrise Hotel", 
-//       location: "456 Lê Văn Việt, Q9", 
-//       price: 200, 
-//       rating: 4.7, 
-//       image: require("../../assets/images/hotel1/2.jpg"),
-//       checkIn: "15 Nov 2024",
-//       checkOut: "17 Nov 2024",
-//       guests: 3,
-//       nights: 2,
-//       roomId: "room_002",
-//       hotelId: "hotel_002",
-//     },
-//   ],
-//   completed: [
-//     { 
-//       id: 3, 
-//       name: "HarborHaven Hideaway", 
-//       location: "123 Nguyễn Kiệm, Gò Vấp", 
-//       price: 700, 
-//       rating: 4.8, 
-//       image: require("../../assets/images/hotel1/3.jpg"),
-//       checkIn: "04 Oct 2024",
-//       checkOut: "03 Nov 2024",
-//       guests: 5,
-//       nights: 30,
-//       roomId: "room_003",
-//       hotelId: "hotel_003",
-//     },
-//   ],
-//   cancelled: [
-//     { 
-//       id: 5, 
-//       name: "GreenView", 
-//       location: "123 Nguyễn Kiệm, Gò Vấp", 
-//       price: 320, 
-//       rating: 4.6, 
-//       image: require("../../assets/images/hotel1/4.jpg"),
-//       checkIn: "01 Dec 2024",
-//       checkOut: "05 Dec 2024",
-//       guests: 2,
-//       nights: 4,
-//       roomId: "room_005",
-//       hotelId: "hotel_005",
-//     },
-//   ],
-// };
+// // Map room_id -> Room
+// type RoomMap = Record<string, Room>;
 
 // export default function MyBookingsScreen() {
-//   const [tab, setTab] = useState<"upcoming" | "completed" | "cancelled">("upcoming");
+//   const { user } = useAuth();
+//   const [tab, setTab] = useState<TabKey>("upcoming");
+//   const [grouped, setGrouped] = useState<GroupedBookings>({
+//     upcoming: [],
+//     completed: [],
+//     cancelled: [],
+//   });
+//   const [roomMap, setRoomMap] = useState<RoomMap>({});   // <- THÊM STATE
+//   const [loading, setLoading] = useState(false);
+//   const [err, setErr] = useState<string | null>(null);
 
-//   const handleViewDetails = (bookingId: number) => {
-//     router.push({
-//       pathname: "/(tabs)/home/receipt",
-//       params: { booking_id: bookingId }
-//     });
-//   };
+//   useEffect(() => {
+//     const loadBookings = async () => {
+//       try {
+//         setLoading(true);
+//         setErr(null);
 
-//   const handleCancelBooking = (bookingId: number) => {
-//     router.push({
-//       pathname: "/(tabs)/home/cancelBooking",
-//       params: { booking_id: bookingId }
-//     });
-//   };
+//         if (!user?.email) {
+//           setErr("Bạn cần đăng nhập để xem lịch sử đặt phòng.");
+//           setGrouped({ upcoming: [], completed: [], cancelled: [] });
+//           setRoomMap({});
+//           return;
+//         }
 
-//   const handleBookAgain = (roomId: string, hotelId: string) => {
-//     // Navigate to booking page with room and hotel details
-//     router.push({
-//       pathname: "/(tabs)/home/booking",
-//       params: { 
-//         room_id: roomId,
-//         hotel_id: hotelId
+//         // 1. Lấy account theo email
+//         let account: any;
+//         try {
+//           account = await accountApi.findByEmail(user.email);
+//         } catch (e: any) {
+//           // Nếu BE trả 404 "Account not found" thì tạo mới account
+//           if (axios.isAxiosError(e) && e.response?.status === 404) {
+//             account = await accountApi.createOrGetAccount(
+//               user.email,
+//               user.displayName || ""
+//             );
+//           } else {
+//             throw e;
+//           }
+//         }
+
+//         const accountId: string | undefined = account?.account_id;
+//         if (!accountId) {
+//           setErr("Không tìm thấy account_id của bạn.");
+//           setGrouped({ upcoming: [], completed: [], cancelled: [] });
+//           setRoomMap({});
+//           return;
+//         }
+
+//         // 2. Lấy danh sách booking theo account_id
+//         const bookings = await bookingApi.getByAccount(accountId);
+
+//         // 3. Nhóm booking theo status
+//         const tmp: GroupedBookings = {
+//           upcoming: [],
+//           completed: [],
+//           cancelled: [],
+//         };
+
+//         bookings.forEach((b) => {
+//           const status = (b.status || "").toLowerCase();
+
+//           if (["upcoming", "pending", "booking", "confirmed"].includes(status)) {
+//             tmp.upcoming.push(b);
+//           } else if (["completed", "done", "finished", "success"].includes(status)) {
+//             tmp.completed.push(b);
+//           } else if (["cancelled", "canceled"].includes(status)) {
+//             tmp.cancelled.push(b);
+//           } else {
+//             tmp.upcoming.push(b);
+//           }
+//         });
+
+//         setGrouped(tmp);
+
+//         // 4. Lấy chi tiết room cho từng room_id để có images
+//         const roomIds = Array.from(
+//           new Set(
+//             bookings
+//               .map((b) => b.room_id)
+//               .filter((id): id is string => Boolean(id))
+//           )
+//         );
+
+//         if (roomIds.length === 0) {
+//           setRoomMap({});
+//         } else {
+//           const tmpRoomMap: RoomMap = {};
+
+//           await Promise.all(
+//             roomIds.map(async (id) => {
+//               try {
+//                 const room = await fetchRoomById(id); // gọi /roomDetail?room_id=
+//                 if (room) {
+//                   tmpRoomMap[id] = room;
+//                 }
+//               } catch (e) {
+//                 console.log("Error load room detail", id, e);
+//               }
+//             })
+//           );
+
+//           setRoomMap(tmpRoomMap);
+//         }
+//       } catch (e) {
+//         console.log("Error load bookings:", e);
+//         setErr("Không tải được danh sách đặt phòng. Vui lòng thử lại.");
+//         setRoomMap({});
+//       } finally {
+//         setLoading(false);
 //       }
-//     });
+//     };
+
+//     loadBookings();
+//   }, [user?.email]);
+
+//   const currentData = useMemo(() => grouped[tab], [grouped, tab]);
+
+//   // Map Booking -> data cho BookingCard
+//   const renderItem = ({ item }: { item: Booking }) => {
+//     const room = item.room_id ? roomMap[item.room_id] : undefined;
+//     const image = room?.images?.[0] ?? ""; // lấy hình đầu tiên
+
+//     const cardItem = {
+//       id: item.booking_id,
+//       name: item.hotel_info?.name ?? "Không rõ tên khách sạn",
+//       location: item.hotel_info?.address ?? "",
+//       price: item.total_price ?? 0,
+//       rating: room?.rate ?? 4.8,
+//       image, // dùng hình từ roomDetail
+//     };
+
+//     return <BookingCard item={cardItem} type={tab} />;
 //   };
-
-//   const handleReview = (bookingId: number) => {
-//     // Navigate to review page
-//     router.push({
-//       pathname: "/(tabs)/home/review",
-//       params: { booking_id: bookingId }
-//     });
-//   };
-
-//   const renderBookingCard = ({ item }: { item: any }) => {
-//     const statusColor = tab === "upcoming" ? COLOR.warning : tab === "completed" ? COLOR.success : COLOR.danger;
-//     const statusBg = statusColor + '15';
-    
-//     return (
-//       <View style={styles.card}>
-//         <View style={styles.cardHeader}>
-//           <Text style={styles.bookingId}>#{item.id.toString().padStart(6, '0')}</Text>
-//         </View>
-
-//         <View style={styles.cardContent}>
-//           <Image source={item.image} style={styles.hotelImage} />
-          
-//           <View style={styles.hotelInfo}>
-//             <Text style={styles.hotelName} numberOfLines={1}>{item.name}</Text>
-            
-//             <View style={styles.locationRow}>
-//               <Ionicons name="location" size={14} color={COLOR.gray} />
-//               <Text style={styles.location} numberOfLines={1}>{item.location}</Text>
-//             </View>
-
-//             <View style={styles.ratingRow}>
-//               <Ionicons name="star" size={14} color={COLOR.gold} />
-//               <Text style={styles.rating}>{item.rating}</Text>
-//             </View>
-
-//             <View style={styles.infoGrid}>
-//               <View style={styles.infoItem}>
-//                 <Ionicons name="calendar-outline" size={14} color={COLOR.gray} />
-//                 <Text style={styles.infoText}>{item.checkIn}</Text>
-//               </View>
-//               <View style={styles.infoItem}>
-//                 <Ionicons name="moon-outline" size={14} color={COLOR.gray} />
-//                 <Text style={styles.infoText}>{item.nights} đêm</Text>
-//               </View>
-//             </View>
-//           </View>
-//         </View>
-
-        
-//         <View style={styles.cardFooter}>
-//   <View style={styles.actions}>
-//     {tab === "upcoming" && (
-//       <>
-//         <TouchableOpacity 
-//           style={[styles.actionButton, styles.cancelButton]}
-//           onPress={() => handleCancelBooking(item.id)}
-//           activeOpacity={0.7}
-//         >
-//           <Text style={styles.cancelButtonText}>Hủy</Text>
-//         </TouchableOpacity>
-//         {/* <TouchableOpacity 
-//           style={[styles.actionButton, styles.detailButton]}
-//           onPress={() => handleViewDetails(item.id)}
-//           activeOpacity={0.7}
-//         >
-//           <Text style={styles.detailButtonText}>Chi tiết</Text>
-//         </TouchableOpacity> */}
-//       </>
-//     )}
-
-//     {tab === "completed" && (
-//       <>
-//         <TouchableOpacity 
-//           style={[styles.actionButton, styles.bookAgainButton]}
-//           onPress={() => handleBookAgain(item.roomId, item.hotelId)}
-//           activeOpacity={0.7}
-//         >
-//           <Text style={styles.bookAgainButtonText}>Đặt lại</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity 
-//           style={[styles.actionButton, styles.detailButton]}
-//           onPress={() => handleReview(item.id)}
-//           activeOpacity={0.7}
-//         >
-//           <Text style={styles.detailButtonText}>Đánh giá</Text>
-//         </TouchableOpacity>
-//       </>
-//     )}
-
-//     {tab === "cancelled" && (
-//       <TouchableOpacity 
-//         style={[styles.actionButton, styles.detailButton]}
-//         onPress={() => handleBookAgain(item.roomId, item.hotelId)}
-//         activeOpacity={0.7}
-//       >
-//         <Text style={styles.detailButtonText}>Đặt lại</Text>
-//       </TouchableOpacity>
-//     )}
-//   </View>
-
-//   <View style={styles.priceSection}>
-//     <Text style={styles.priceLabel}>Tổng tiền</Text>
-//     <View style={styles.priceRow}>
-//       <Text style={styles.priceValue}>{item.price * item.nights}đ</Text>
-//       <Text style={styles.priceUnit}>({item.nights} đêm)</Text>
-//     </View>
-//   </View>
-// </View>
-
-//       </View>
-//     );
-//   };
-
-//   const renderEmptyState = () => (
-//     <View style={styles.emptyContainer}>
-//       <View style={styles.emptyIcon}>
-//         <Ionicons 
-//           name={TAB_LABELS[tab].icon as any} 
-//           size={64} 
-//           color={COLOR.lightGray} 
-//         />
-//       </View>
-//       <Text style={styles.emptyTitle}>Chưa có đơn đặt phòng</Text>
-//       <Text style={styles.emptyText}>
-//         {tab === "upcoming" && "Bạn chưa có đơn đặt phòng nào đang chờ"}
-//         {tab === "completed" && "Bạn chưa hoàn thành đơn đặt phòng nào"}
-//         {tab === "cancelled" && "Bạn chưa hủy đơn đặt phòng nào"}
-//       </Text>
-//     </View>
-//   );
 
 //   return (
 //     <SafeAreaView style={styles.container}>
@@ -270,392 +179,326 @@
 //       <HeaderScreen title="Lịch sử đặt phòng" />
 
 //       {/* Tabs */}
-//       <View style={styles.tabContainer}>
-//         {Object.entries(TAB_LABELS).map(([key, info]) => (
-//           <TouchableOpacity 
-//             key={key} 
-//             onPress={() => setTab(key as any)} 
-//             style={[
-//               styles.tab,
-//               tab === key && styles.tabActive
-//             ]}
-//             activeOpacity={0.7}
+//       <View style={styles.tabRow}>
+//         {(Object.keys(TAB_LABELS) as TabKey[]).map((key) => (
+//           <TouchableOpacity
+//             key={key}
+//             onPress={() => setTab(key)}
+//             style={styles.tabBtn}
 //           >
-//             {/* <Ionicons 
-//               name={info.icon as any} 
-//               size={20} 
-//               color={tab === key ? COLOR.white : COLOR.gray} 
-//             /> */}
-//             <Text style={[
-//               styles.tabText, 
-//               tab === key && styles.tabTextActive
-//             ]}>
-//               {info.label}
+//             <Text
+//               style={[
+//                 styles.tabText,
+//                 tab === key && styles.tabTextActive,
+//               ]}
+//             >
+//               {TAB_LABELS[key]}
 //             </Text>
-//             {tab === key && DATA[key].length > 0 && (
-//               <View style={styles.badge}>
-//                 <Text style={styles.badgeText}>{DATA[key].length}</Text>
-//               </View>
-//             )}
+//             {tab === key && <View style={styles.tabUnderline} />}
 //           </TouchableOpacity>
 //         ))}
 //       </View>
 
-//       {/* Booking list */}
-//       <FlatList
-//         data={DATA[tab]}
-//         keyExtractor={(item) => item.id.toString()}
-//         renderItem={renderBookingCard}
-//         contentContainerStyle={styles.listContent}
-//         showsVerticalScrollIndicator={false}
-//         ListEmptyComponent={renderEmptyState}
-//       />
+//       {/* Body: loading / error / list */}
+//       {loading ? (
+//         <View style={styles.center}>
+//           <ActivityIndicator />
+//         </View>
+//       ) : err ? (
+//         <View style={[styles.center, { paddingHorizontal: 16 }]}>
+//           <Text style={styles.errorText}>{err}</Text>
+//         </View>
+//       ) : (
+//         <FlatList
+//           data={currentData}
+//           keyExtractor={(item) =>
+//             (item.booking_id || item._id || Math.random().toString()).toString()
+//           }
+//           renderItem={renderItem}
+//           contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+//           ListEmptyComponent={
+//             <Text style={styles.emptyText}>
+//               Không có đơn {TAB_LABELS[tab].toLowerCase()}.
+//             </Text>
+//           }
+//         />
+//       )}
 //     </SafeAreaView>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   container: { 
-//     flex: 1, 
-//     backgroundColor: COLOR.background 
+//   container: { flex: 1, backgroundColor: "#F8FAFF" },
+//   tabRow: {
+//     flexDirection: "row",
+//     justifyContent: "space-around",
+//     borderBottomWidth: 1,
+//     borderColor: "#CFCFCF",
+//     marginTop: 10,
 //   },
-//   tabContainer: {
-//     flexDirection: 'row',
-//     backgroundColor: COLOR.white,
-//     marginHorizontal: 16,
-//     marginTop: 16,
-//     borderRadius: 16,
-//     padding: 4,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.06,
-//     shadowRadius: 8,
-//     elevation: 2,
+//   tabBtn: { alignItems: "center", paddingVertical: 8 },
+//   tabText: { color: "#797979", fontWeight: "500" },
+//   tabTextActive: { color: "#2E76FF" },
+//   tabUnderline: {
+//     height: 2,
+//     width: 40,
+//     backgroundColor: "#2E76FF",
+//     marginTop: 4,
+//     borderRadius: 1,
 //   },
-//   tab: {
+//   center: {
 //     flex: 1,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     paddingVertical: 12,
-//     borderRadius: 12,
-//     gap: 6,
+//     justifyContent: "center",
+//     alignItems: "center",
 //   },
-//   tabActive: {
-//     backgroundColor: COLOR.primary,
-//   },
-//   tabText: {
-//     fontSize: 13,
-//     fontWeight: '600',
-//     color: COLOR.gray,
-//   },
-//   tabTextActive: {
-//     color: COLOR.white,
-//   },
-//   badge: {
-//     backgroundColor: COLOR.white,
-//     borderRadius: 10,
-//     minWidth: 20,
-//     height: 20,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     paddingHorizontal: 6,
-//   },
-//   badgeText: {
-//     fontSize: 11,
-//     fontWeight: '700',
-//     color: COLOR.primary,
-//   },
-//   listContent: {
-//     padding: 16,
-//     paddingBottom: 24,
-//   },
-//   card: {
-//     backgroundColor: COLOR.white,
-//     borderRadius: 20,
-//     marginBottom: 16,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.08,
-//     shadowRadius: 12,
-//     elevation: 4,
-//     overflow: 'hidden',
-//   },
-//   cardHeader: {
-//     flexDirection: 'row',
-//     justifyContent: 'flex-end',
-//     alignItems: 'center',
-//     padding: 16,
-//     paddingBottom: 12,
-//   },
-//   statusBadge: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     paddingHorizontal: 12,
-//     paddingVertical: 6,
-//     borderRadius: 12,
-//     gap: 4,
-//   },
-//   statusText: {
-//     fontSize: 13,
-//     fontWeight: '700',
-//   },
-//   bookingId: {
-//     fontSize: 13,
-//     fontWeight: '600',
-//     color: COLOR.gray,
-//     textAlign: 'right'
-//   },
-//   cardContent: {
-//     flexDirection: 'row',
-//     paddingHorizontal: 16,
-//     gap: 12,
-//   },
-//   hotelImage: {
-//     width: 100,
-//     height: 100,
-//     borderRadius: 16,
-//   },
-//   hotelInfo: {
-//     flex: 1,
-//     justifyContent: 'center',
-//   },
-//   hotelName: {
-//     fontSize: 16,
-//     fontWeight: '700',
-//     color: COLOR.black,
-//     marginBottom: 4,
-//   },
-//   locationRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 4,
-//     marginBottom: 4,
-//   },
-//   location: {
-//     fontSize: 13,
-//     color: COLOR.gray,
-//     flex: 1,
-//   },
-//   ratingRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 4,
-//     marginBottom: 8,
-//   },
-//   rating: {
-//     fontSize: 13,
-//     fontWeight: '600',
-//     color: COLOR.black,
-//   },
-//   infoGrid: {
-//     flexDirection: 'row',
-//     gap: 12,
-//   },
-//   infoItem: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 4,
-//   },
-//   infoText: {
-//     fontSize: 12,
-//     color: COLOR.darkGray,
-//     fontWeight: '500',
-//   },
-//   // cardFooter: {
-//   //   flexDirection: 'row',
-//   //   justifyContent: 'space-between',
-//   //   alignItems: 'center',
-//   //   padding: 16,
-//   //   paddingTop: 12,
-//   //   borderTopWidth: 1,
-//   //   borderTopColor: COLOR.lightGray + '30',
-//   //   marginTop: 12,
-//   // },
-//   // priceSection: {
-//   //   flex: 1,
-//   // },
-//   cardFooter: {
-//   flexDirection: 'row',
-//   justifyContent: 'space-between',
-//   alignItems: 'center',
-//   padding: 16,
-//   paddingTop: 12,
-//   borderTopWidth: 1,
-//   borderTopColor: COLOR.lightGray + '30',
-//   marginTop: 12,
-// },
-// priceSection: {
-//   alignItems: 'flex-end', // canh phải
-// },
-//   priceLabel: {
-//     fontSize: 12,
-//     color: COLOR.gray,
-//     marginBottom: 2,
-//   },
-//   priceRow: {
-//     flexDirection: 'row',
-//     alignItems: 'baseline',
-//     gap: 4,
-//   },
-//   priceValue: {
-//     fontSize: 18,
-//     fontWeight: '800',
-//     color: COLOR.primary,
-//   },
-//   priceUnit: {
-//     fontSize: 12,
-//     color: COLOR.gray,
-//   },
-//   // actions: {
-//   //   flexDirection: 'row',
-//   //   gap: 8,
-//   // },
-//   // actionButton: {
-//   //   flexDirection: 'row',
-//   //   alignItems: 'center',
-//   //   justifyContent: 'center',
-//   //   paddingVertical: 10,
-//   //   paddingHorizontal: 16,
-//   //   borderRadius: 12,
-//   //   gap: 4,
-//   // },
-//   actions: {
-//   flexDirection: 'row',
-//   gap: 10,
-//   flexWrap: 'wrap', // tự xuống dòng nếu hẹp
-// },
-// actionButton: {
-//   paddingVertical: 10,
-//   paddingHorizontal: 16,
-//   borderRadius: 12,
-// },
-//   cancelButton: {
-//     backgroundColor: COLOR.danger + '15',
-//     borderWidth: 1,
-//     borderColor: COLOR.danger + '50',
-//   },
-//   cancelButtonText: {
-//     fontSize: 14,
-//     fontWeight: '700',
-//     color: COLOR.danger,
-//   },
-//   detailButton: {
-//     backgroundColor: COLOR.primary,
-//   },
-//   detailButtonText: {
-//     fontSize: 14,
-//     fontWeight: '700',
-//     color: COLOR.white,
-//   },
-//   bookAgainButton: {
-//     backgroundColor: COLOR.white,
-//     borderWidth: 1.5,
-//     borderColor: COLOR.primary,
-//   },
-//   bookAgainButtonText: {
-//     fontSize: 14,
-//     fontWeight: '700',
-//     color: COLOR.primary,
-//   },
-//   emptyContainer: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     paddingVertical: 80,
-//     paddingHorizontal: 40,
-//   },
-//   emptyIcon: {
-//     width: 120,
-//     height: 120,
-//     borderRadius: 60,
-//     backgroundColor: COLOR.background,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     marginBottom: 20,
-//   },
-//   emptyTitle: {
-//     fontSize: 18,
-//     fontWeight: '700',
-//     color: COLOR.black,
-//     marginBottom: 8,
+//   errorText: {
+//     color: "#DC2626",
+//     textAlign: "center",
 //   },
 //   emptyText: {
-//     fontSize: 14,
-//     color: COLOR.gray,
-//     textAlign: 'center',
-//     lineHeight: 20,
+//     textAlign: "center",
+//     marginTop: 24,
+//     color: "#6B7280",
 //   },
 // });
 
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useState } from "react";
-import React from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BookingCard from "../../components/BookingCard";
-import ButtonBackScreen from "@/components/ButtonBackScreen";
+
+import BookingCard from "@/components/BookingCard";
 import HeaderScreen from "@/components/HeaderScreen";
 
-const COLOR = { blue: "#2E76FF", black: "#101010", gray: "#CFCFCF", grayWhite: "#EFEFEF" };
+import { accountApi } from "@/api/accountApi";
+import { bookingApi } from "@/api/bookingApi";
+import { fetchRoomById } from "@/api/roomApi";
+import { useAuth } from "@/src/auth/auth-store";
+import type { Booking } from "@/types/booking";
+import axios from "axios";
 
-// Mapping key tiếng Anh -> nhãn hiển thị tiếng Việt
-const TAB_LABELS: Record<string, string> = {
+type TabKey = "upcoming" | "completed" | "cancelled";
+
+const TAB_LABELS: Record<TabKey, string> = {
   upcoming: "Đang đặt",
   completed: "Hoàn thành",
   cancelled: "Đã hủy",
 };
 
-// Dữ liệu sample
-const DATA = {
-  upcoming: [
-    { id: 1, name: "GoldenValley", location: "123 Nguyễn Kiệm, Gò Vấp", price: 150, rating: 4.9, image: "../../assets/images/hotel1/1.jpg" },
-  ],
-  completed: [
-    { id: 3, name: "HarborHaven Hideaway", location: "123 Nguyễn Kiệm, Gò Vấp", price: 700, rating: 4.8, image: "../../assets/images/hotel3/1.jpg" },
-  ],
-  cancelled: [
-    { id: 5, name: "GreenView", location: "123 Nguyễn Kiệm, Gò Vấp", price: 320, rating: 4.6, image: "../../assets/images/hotel1/1.jpg" },
-  ],
-};
+interface GroupedBookings {
+  upcoming: Booking[];
+  completed: Booking[];
+  cancelled: Booking[];
+}
 
 export default function MyBookingsScreen() {
-  const [tab, setTab] = useState<"upcoming" | "completed" | "cancelled">("upcoming");
+  const { user } = useAuth();
+  const [tab, setTab] = useState<TabKey>("upcoming");
+  const [grouped, setGrouped] = useState<GroupedBookings>({
+    upcoming: [],
+    completed: [],
+    cancelled: [],
+  });
+  const [roomImages, setRoomImages] = useState<Record<string, string | undefined>>(
+    {}
+  );
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadBookings = async () => {
+      try {
+        setLoading(true);
+        setErr(null);
+
+        if (!user?.email) {
+          setErr("Bạn cần đăng nhập để xem lịch sử đặt phòng.");
+          setGrouped({ upcoming: [], completed: [], cancelled: [] });
+          return;
+        }
+
+        // 1. Lấy account theo email
+        let account: any;
+        try {
+          account = await accountApi.findByEmail(user.email);
+        } catch (e: any) {
+          if (axios.isAxiosError(e) && e.response?.status === 404) {
+            account = await accountApi.createOrGetAccount(
+              user.email,
+              user.displayName || ""
+            );
+          } else {
+            throw e;
+          }
+        }
+
+        const accountId: string | undefined = account?.account_id;
+        if (!accountId) {
+          setErr("Không tìm thấy account_id của bạn.");
+          setGrouped({ upcoming: [], completed: [], cancelled: [] });
+          return;
+        }
+
+        // 2. Lấy danh sách booking theo account_id
+        const bookings = await bookingApi.getByAccount(accountId);
+
+        // 2.1 Lấy ảnh room theo room_id
+        const roomIdSet = new Set<string>();
+        bookings.forEach((b) => {
+          if (b.room_id) roomIdSet.add(b.room_id);
+        });
+
+        const roomIds = Array.from(roomIdSet);
+        const imgMap: Record<string, string | undefined> = {};
+
+        await Promise.all(
+          roomIds.map(async (roomId) => {
+            try {
+              const room = await fetchRoomById(roomId);
+              imgMap[roomId] = room.images?.[0];
+            } catch (e) {
+              console.log("Error load room for booking:", roomId, e);
+            }
+          })
+        );
+        setRoomImages(imgMap);
+
+        // 3. Nhóm booking theo status
+        const tmp: GroupedBookings = {
+          upcoming: [],
+          completed: [],
+          cancelled: [],
+        };
+
+        bookings.forEach((b) => {
+          const status = (b.status || "").toLowerCase();
+
+          if (["upcoming", "pending", "booking", "confirmed"].includes(status)) {
+            tmp.upcoming.push(b);
+          } else if (["completed", "done", "finished", "success"].includes(status)) {
+            tmp.completed.push(b);
+          } else if (["cancelled", "canceled"].includes(status)) {
+            tmp.cancelled.push(b);
+          } else {
+            tmp.upcoming.push(b);
+          }
+        });
+
+        setGrouped(tmp);
+      } catch (e) {
+        console.log("Error load bookings:", e);
+        setErr("Không tải được danh sách đặt phòng. Vui lòng thử lại.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBookings();
+  }, [user?.email]);
+
+  const currentData = useMemo(() => grouped[tab], [grouped, tab]);
+
+  const renderItem = ({ item }: { item: Booking }) => {
+    const cardItem = {
+      bookingId: item.booking_id,    // <- booking_id
+      roomId: item.room_id,          // <- room_id (nếu cần dùng để lấy ảnh)
+      name: item.hotel_info?.name ?? "Không rõ tên khách sạn",
+      location: item.hotel_info?.address ?? "",
+      price: item.total_price ?? 0,
+      rating: 4.8,
+      image: roomImages[item.room_id ?? ""]  // nếu bạn có map roomId -> image
+    };
+
+    return <BookingCard item={cardItem} type={tab} />;
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* header */}
-      <HeaderScreen title="Lịch sử đặt phòng"/>
+      <HeaderScreen title="Lịch sử đặt phòng" />
 
-      {/* Tabs */}
       <View style={styles.tabRow}>
-        {Object.entries(TAB_LABELS).map(([key, label]) => (
-          <TouchableOpacity key={key} onPress={() => setTab(key as any)} style={styles.tabBtn}>
-            <Text style={[styles.tabText, tab === key && styles.tabTextActive]}>{label}</Text>
+        {(Object.keys(TAB_LABELS) as TabKey[]).map((key) => (
+          <TouchableOpacity
+            key={key}
+            onPress={() => setTab(key)}
+            style={styles.tabBtn}
+          >
+            <Text
+              style={[styles.tabText, tab === key && styles.tabTextActive]}
+            >
+              {TAB_LABELS[key]}
+            </Text>
             {tab === key && <View style={styles.tabUnderline} />}
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Booking list */}
-      <FlatList
-        data={DATA[tab]}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <BookingCard item={item} type={tab} />}
-        contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
-      />
+      {loading ? (
+        <View style={styles.center}>
+          <ActivityIndicator />
+        </View>
+      ) : err ? (
+        <View style={[styles.center, { paddingHorizontal: 16 }]}>
+          <Text style={styles.errorText}>{err}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={currentData}
+          keyExtractor={(item) =>
+            (item.booking_id || (item as any)._id || Math.random().toString()).toString()
+          }
+          renderItem={renderItem}
+          contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              Không có đơn {TAB_LABELS[tab].toLowerCase()}.
+            </Text>
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#F8FAFF" },
-  topbar: { flexDirection: "row", alignItems: "center", justifyContent: "center", height: 45 },
-  topTitle: { fontSize: 16, fontWeight: "600", color: "#101010" },
-  tabRow: { flexDirection: "row", justifyContent: "space-around", borderBottomWidth: 1, borderColor: "#CFCFCF", marginTop: 10 },
+  tabRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    borderBottomWidth: 1,
+    borderColor: "#CFCFCF",
+    marginTop: 10,
+  },
   tabBtn: { alignItems: "center", paddingVertical: 8 },
   tabText: { color: "#797979", fontWeight: "500" },
   tabTextActive: { color: "#2E76FF" },
-  tabUnderline: { height: 2, width: 40, backgroundColor: "#2E76FF", marginTop: 4, borderRadius: 1 },
+  tabUnderline: {
+    height: 2,
+    width: 40,
+    backgroundColor: "#2E76FF",
+    marginTop: 4,
+    borderRadius: 1,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#DC2626",
+    textAlign: "center",
+  },
+  emptyText: {
+    textAlign: "center",
+    marginTop: 24,
+    color: "#6B7280",
+  },
 });

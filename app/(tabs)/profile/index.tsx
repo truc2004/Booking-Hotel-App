@@ -76,7 +76,7 @@ export default function ProfileScreen() {
 
       <View style={styles.avatarWrap}>
         <Image
-          source={{ uri: "https://i.pravatar.cc/160?img=12" }}
+          source={{ uri: "https://cdn2.fptshop.com.vn/small/avatar_trang_1_cd729c335b.jpg" }}
           style={styles.avatar}
         />
         <View style={styles.avatarEdit}>

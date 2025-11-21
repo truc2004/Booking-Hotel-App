@@ -1,7 +1,8 @@
 import { Account } from "@/types/account";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3002/hotel/accounts";
+const API_BASE_URL = "https://hotel-mobile-be.onrender.com/hotel/accounts";
+// const API_BASE_URL = "http://localhost:3002/hotel/accounts";
 
 export const accountApi = {
 
@@ -15,7 +16,7 @@ export const accountApi = {
 
   async createOrGetAccount(email: string, user_name?: string) {
     const res = await axios.post(`${API_BASE_URL}`, {
-      email,
+      email: email,
       user_name: user_name || "",
     });
     return res.data; // account (cũ hoặc mới)

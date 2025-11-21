@@ -1,4 +1,5 @@
 import ButtonBackScreen from "@/components/ButtonBackScreen";
+import HeaderScreen from "@/components/HeaderScreen";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -36,27 +37,27 @@ export default function SearchScreen() {
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
         <ButtonBackScreen />
-        <Text style={styles.title}>Tìm kiếm</Text>
-        <View style={{ width: 40 }} />
+        
       </View>
+    
 
       {/* Ô search */}
       <View style={styles.searchBox}>
         <TextInput
           style={styles.input}
-          placeholder="Search..."
+          placeholder="Tìm kiếm..."
           value={query}
           onChangeText={setQuery}
           returnKeyType="search"
           onSubmitEditing={() => handleSearch()}
         />
-        <TouchableOpacity onPress={() => handleSearch()}>
+        {/* <TouchableOpacity onPress={() => handleSearch()}>
           <Text style={styles.btnText}>Tìm</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Recent Search */}
-      <Text style={styles.sectionTitle}>Recent Search</Text>
+      <Text style={styles.sectionTitle}>Tìm kiếm gần đây</Text>
       <FlatList
         data={recentSearches}
         keyExtractor={(item) => item}

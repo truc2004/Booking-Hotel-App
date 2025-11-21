@@ -38,7 +38,7 @@ export default function EditProfileScreen() {
           return;
         }
 
-        const acc = await accountApi.findByEmail(user.email);
+        const acc = await accountApi.createOrGetAccount(user.email);
 
         setAccount(acc);
         setName(acc.user_name || "");

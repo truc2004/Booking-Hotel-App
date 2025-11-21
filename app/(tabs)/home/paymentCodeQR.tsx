@@ -35,7 +35,7 @@ export default function PaymentQRScreen() {
       try {
         const res = await axios.post("https://hotel-mobile-be.onrender.com/hotel/bookings", {
           ...bookingPayload,
-          status: "PAID",
+          status: "upcoming",
         });
 
         router.replace("/(tabs)/home/paymentSuccess");
