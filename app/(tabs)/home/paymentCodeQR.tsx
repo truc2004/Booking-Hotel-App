@@ -1,3 +1,4 @@
+import { bookingApi } from "@/api/bookingApi";
 import HeaderScreen from "@/components/HeaderScreen";
 import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -33,10 +34,11 @@ export default function PaymentQRScreen() {
     // Giả lập: sau 5 giây → thanh toán thành công + lưu booking
     timeoutRef.current = setTimeout(async () => {
       try {
-        const res = await axios.post("https://hotel-mobile-be.onrender.com/hotel/bookings", {
+        const res = await bookingApi.create({
           ...bookingPayload,
           status: "upcoming",
         });
+
 
         router.replace("/(tabs)/home/paymentSuccess");
       } catch (err: any) {
@@ -45,8 +47,7 @@ export default function PaymentQRScreen() {
           console.log("Booking error status:", err.response?.status);
           Alert.alert(
             "Lỗi",
-            `Lưu đơn đặt phòng thất bại: ${
-              err.response?.data?.message || err.message
+            `Lưu đơn đặt phòng thất bại: ${err.response?.data?.message || err.message
             }`
           );
         } else {
@@ -57,7 +58,7 @@ export default function PaymentQRScreen() {
           );
         }
       }
-    }, 1000);
+    }, 100);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -66,14 +67,14 @@ export default function PaymentQRScreen() {
 
   const amountNumber = Number(totalAmount || 0);
 
-   return (
+  return (
     <SafeAreaView style={styles.root}>
       <HeaderScreen title="Mã QR thanh toán" />
 
       <View style={styles.container}>
         {/* Phần trên nền xanh */}
         <View style={styles.topSection}>
-          <Text style={styles.topTitle}>Thanh toán bằng QR</Text>
+          <Text style={styles.topTitle}>Sacombank</Text>
           <Text style={styles.topHint}>
             Vui lòng mở ứng dụng ngân hàng để quét mã
           </Text>
@@ -113,23 +114,9 @@ export default function PaymentQRScreen() {
             </View>
           </View>
 
-          <View style={styles.noteBox}>
-            <Text style={styles.noteTitle}>Hoặc chuyển khoản trực tiếp</Text>
-            <Text style={styles.noteText}>
-              Quý khách có thể chuyển khoản trực tiếp theo thông tin trên hoặc
-              thanh toán tiền mặt tại quầy lễ tân.
-            </Text>
-          </View>
-
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Tình trạng</Text>
             <Text style={styles.infoValue}>Đang chờ xác nhận thanh toán…</Text>
-          </View>
-          <View style={styles.infoRowLast}>
-            <Text style={styles.infoLabel}>Ghi chú</Text>
-            <Text style={styles.infoValue}>
-              Hệ thống sẽ tự động xác nhận sau vài giây.
-            </Text>
           </View>
         </View>
       </View>

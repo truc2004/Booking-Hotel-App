@@ -15,4 +15,9 @@ export const bookingApi = {
     const res = await axios.get(`${API_BASE_URL}/${bookingId}`);
     return res.data;
   },
+
+  async create(bookingPayload: any): Promise<Booking> {
+    const res = await axios.post(API_BASE_URL, bookingPayload);
+    return res.data;
+  },
 };

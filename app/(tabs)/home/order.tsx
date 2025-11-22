@@ -15,6 +15,7 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/src/auth/auth-store";
@@ -175,6 +176,28 @@ export default function BookingScreen() {
 
     const handleBooking = () => {
         let newErrors: any = {};
+
+        //  check đnagư nhập
+        if (!user?.email) {
+            Alert.alert(
+                "Yêu cầu đăng nhập",
+                "Vui lòng đăng nhập trước khi thanh toán.",
+                [
+                    {
+                        text: "Hủy",
+                        style: "cancel",
+                    },
+                    {
+                        text: "Đăng nhập",
+                        onPress: () => {
+                            // Đường dẫn màn đăng nhập của em
+                            router.push("/(auth)/sign-in");
+                        },
+                    },
+                ]
+            );
+            return; // Dừng, không cho thanh toán tiếp
+        }
 
         // === Validate tên ===
         if (!form.name.trim()) {

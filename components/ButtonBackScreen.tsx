@@ -6,7 +6,7 @@ const ButtonBackScreen = () => {
   const router = useRouter();
 
   return (
-    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+    <TouchableOpacity style={styles.backButton} onPress={() => router.push(`/(tabs)/home`)}>
       <Image
         source={require("../assets/images/icon/back.png")}
         style={styles.backIcon}
