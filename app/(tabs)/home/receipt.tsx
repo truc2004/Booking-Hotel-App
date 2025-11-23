@@ -1,4 +1,5 @@
 import { bookingApi } from "@/api/bookingApi";
+import HeaderScreen from "@/components/HeaderScreen";
 import type { Booking } from "@/types/booking";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -125,7 +126,7 @@ export default function ReceiptScreen() {
 
   if (err || !booking) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={COLOR.black} />
@@ -164,13 +165,14 @@ export default function ReceiptScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton} >
           <Ionicons name="arrow-back" size={24} color={COLOR.black} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Hóa đơn điện tử</Text>
         <View style={{ width: 40 }} />
-      </View> 
+      </View>  */}
+      <HeaderScreen title="Hóa đơn điện tử"/>
 
 
       <ScrollView
@@ -273,7 +275,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     color: COLOR.gray,
-    fontSize: 14,
+    fontSize: 12,
   },
   header: {
     flexDirection: "row",
@@ -300,7 +302,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 120,
   },
   receiptCard: {
     backgroundColor: COLOR.white,
@@ -332,7 +333,7 @@ const styles = StyleSheet.create({
   },
   barcodeText: {
     marginTop: 12,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "700",
     color: COLOR.black,
     letterSpacing: 3,
@@ -347,13 +348,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   infoLabel: {
-    fontSize: 14,
+    fontSize: 12,
     color: COLOR.gray,
     fontWeight: "500",
     flex: 1,
   },
   infoValue: {
-    fontSize: 14,
+    fontSize: 12,
     color: COLOR.black,
     fontWeight: "600",
     textAlign: "right",
@@ -361,15 +362,15 @@ const styles = StyleSheet.create({
   },
   boldValue: {
     fontWeight: "700",
-    fontSize: 15,
+    fontSize: 12,
   },
   totalLabel: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "700",
     color: COLOR.black,
   },
   totalValue: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: "800",
     color: COLOR.primary,
   },
@@ -396,7 +397,7 @@ const styles = StyleSheet.create({
   },
   downloadButtonText: {
     color: COLOR.white,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "700",
   },
   footer: {
@@ -426,7 +427,7 @@ const styles = StyleSheet.create({
   },
   footerButtonText: {
     color: COLOR.white,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "700",
   },
 });

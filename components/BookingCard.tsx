@@ -1,15 +1,14 @@
 
-
 // import { Ionicons } from "@expo/vector-icons";
+// import { router } from "expo-router";
+// import React from "react";
 // import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { SafeAreaView } from "react-native-safe-area-context";
-// import React from "react";
-// import { router } from "expo-router";
 
 // // Hàm lấy hình (local hoặc URL)
 // export const getLocalImage = (path?: string) => {
 //   if (!path) {
-//     // fallback 1 ảnh có sẵn
+//     // fallback 1 ảnh
 //     return require("../assets/images/hotel1/1.jpg");
 //   }
 
@@ -18,27 +17,48 @@
 //     return { uri: path };
 //   }
 
+//   // Có thể mapping thêm nếu dùng hình local
+//   return require("../assets/images/hotel1/1.jpg");
+// };
 
+// type BookingCardItem = {
+//   bookingId: string;     // <- booking_id
+//   roomId?: string;       // <- room_id (nếu cần dùng sau)
+//   name: string;
+//   location: string;
+//   price: number;
+//   rating: number;
+//   image?: string;
 // };
 
 // export default function BookingCard({
 //   item,
 //   type,
 // }: {
-//   item: {
-//     id: string;            // booking_id
-//     name: string;
-//     location: string;
-//     price: number;
-//     rating: number;
-//     image?: string;
-//   };
+//   item: BookingCardItem;
 //   type: "upcoming" | "completed" | "cancelled";
 // }) {
 //   const handleViewDetail = () => {
 //     router.push({
 //       pathname: "/(tabs)/home/receipt",
-//       params: { bookingId: item.id },
+//       params: { bookingId: item.bookingId }
+//     });
+//   };
+
+//   const handleReview = () => {
+//     router.push({
+//       pathname: "/(tabs)/home/review",   // đường dẫn tới ReviewScreen
+//       params: {
+//         bookingId: item.bookingId,
+//         roomId: item.roomId ?? "",      // cần có roomId
+//       },
+//     });
+//   };
+
+//   const handleCancel = () => {
+//     router.push({
+//       pathname: "/(tabs)/home/cancelBooking",
+//       params: { booking_id: item.bookingId },
 //     });
 //   };
 
@@ -59,13 +79,13 @@
 //           <Text style={styles.title}>{item.name}</Text>
 //           <Text style={styles.location}>{item.location}</Text>
 //           <Text style={styles.price}>
-//             {item.price.toLocaleString("vi-VN")} đ/đêm
+//             {item.price.toLocaleString("vi-VN")}đ/đêm
 //           </Text>
 
 //           <View style={styles.btnRow}>
 //             {type === "upcoming" && (
 //               <>
-//                 <TouchableOpacity style={[styles.btn, styles.cancel]}>
+//                 <TouchableOpacity style={[styles.btn, styles.cancel]} onPress={handleCancel}>
 //                   <Text style={styles.cancelText}>Hủy</Text>
 //                 </TouchableOpacity>
 //                 <TouchableOpacity
@@ -79,12 +99,12 @@
 
 //             {type === "completed" && (
 //               <>
-//                 <TouchableOpacity style={[styles.btn, styles.outline]}>
-//                   <Text style={styles.outlineText}>Đặt lại</Text>
+//                 <TouchableOpacity style={[styles.btn, styles.outline]} onPress={handleViewDetail}>
+//                   <Text style={styles.outlineText}>Chi tiết đơn</Text>
 //                 </TouchableOpacity>
 //                 <TouchableOpacity
 //                   style={[styles.btn, styles.primary]}
-//                   onPress={handleViewDetail}
+//                   onPress={handleReview}
 //                 >
 //                   <Text style={styles.primaryText}>Đánh giá</Text>
 //                 </TouchableOpacity>
@@ -96,7 +116,7 @@
 //                 style={[styles.btn, styles.primary]}
 //                 onPress={handleViewDetail}
 //               >
-//                 <Text style={styles.primaryText}>Xem chi tiết đơn</Text>
+//                 <Text style={styles.primaryText}>Chi tiết đơn</Text>
 //               </TouchableOpacity>
 //             )}
 //           </View>
@@ -126,9 +146,9 @@
 //   discount: { color: "#db8c15ff", fontWeight: "600", fontSize: 12 },
 //   ratingRow: { flexDirection: "row", alignItems: "center", gap: 4 },
 //   rating: { fontSize: 13, color: "#101010" },
-//   title: { fontSize: 16, fontWeight: "600", color: "#101010", marginTop: 4 },
+//   title: { fontSize: 14, fontWeight: "600", color: "#101010", marginTop: 4 },
 //   location: { fontSize: 13, color: "#555" },
-//   price: { color: "#2E76FF", fontWeight: "600", marginTop: 4 },
+//   price: { color: "#2E76FF", fontWeight: "600", marginTop: 4,  fontSize: 13},
 //   btnRow: {
 //     flexDirection: "row",
 //     justifyContent: "space-between",
@@ -153,7 +173,6 @@
 //   },
 //   outlineText: { color: "#2E76FF", fontWeight: "600" },
 // });
-
 
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -206,8 +225,15 @@ export default function BookingCard({
       pathname: "/(tabs)/home/review",   // đường dẫn tới ReviewScreen
       params: {
         bookingId: item.bookingId,
-        roomId: item.roomId ?? "",      // cần có roomId
+        roomId: item.roomId ?? "",
       },
+    });
+  };
+
+  const handleCancel = () => {
+    router.push({
+      pathname: "/(tabs)/home/cancelBooking",
+      params: { booking_id: item.bookingId },
     });
   };
 
@@ -225,16 +251,45 @@ export default function BookingCard({
             </View>
           </View>
 
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.location}>{item.location}</Text>
-          <Text style={styles.price}>
-            {item.price.toLocaleString("vi-VN")}đ/đêm
+          <Text style={styles.title} numberOfLines={2}>
+            {item.name}
           </Text>
+
+          {/* Location + icon map giống mẫu RoomCardVertical */}
+          <View style={styles.locationRow}>
+            <Image
+              source={require("../assets/images/icon/map.png")}
+              style={styles.iconMap}
+            />
+            <Text
+              style={styles.location}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {item.location}
+            </Text>
+          </View>
+
+          {/* Price + icon tiền giống mẫu (cash-outline) */}
+          <View style={styles.priceRow}>
+            <Ionicons
+              name="cash-outline"
+              size={14}
+              color="#797979"
+              style={styles.moneyIcon}
+            />
+            <Text style={styles.price}>
+              {item.price.toLocaleString("vi-VN")}đ/đêm
+            </Text>
+          </View>
 
           <View style={styles.btnRow}>
             {type === "upcoming" && (
               <>
-                <TouchableOpacity style={[styles.btn, styles.cancel]}>
+                <TouchableOpacity
+                  style={[styles.btn, styles.cancel]}
+                  onPress={handleCancel}
+                >
                   <Text style={styles.cancelText}>Hủy</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -248,7 +303,10 @@ export default function BookingCard({
 
             {type === "completed" && (
               <>
-                <TouchableOpacity style={[styles.btn, styles.outline]} onPress={handleViewDetail}>
+                <TouchableOpacity
+                  style={[styles.btn, styles.outline]}
+                  onPress={handleViewDetail}
+                >
                   <Text style={styles.outlineText}>Chi tiết đơn</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -295,9 +353,47 @@ const styles = StyleSheet.create({
   discount: { color: "#db8c15ff", fontWeight: "600", fontSize: 12 },
   ratingRow: { flexDirection: "row", alignItems: "center", gap: 4 },
   rating: { fontSize: 13, color: "#101010" },
-  title: { fontSize: 16, fontWeight: "600", color: "#101010", marginTop: 4 },
-  location: { fontSize: 13, color: "#555" },
-  price: { color: "#2E76FF", fontWeight: "600", marginTop: 4 },
+  title: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#101010",
+    marginTop: 4,
+  },
+
+  // location + icon (giống RoomCardVertical)
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginTop: 4,
+  },
+  iconMap: {
+    height: 15,
+    width: 15,
+    tintColor: "#797979",
+    marginRight: 5,
+    marginTop: 2,
+  },
+  location: {
+    fontSize: 13,
+    color: "#555",
+    flex: 1,
+  },
+
+  // price + icon
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 6,
+  },
+  moneyIcon: {
+    marginRight: 4,
+  },
+  price: {
+    color: "#27ae60",        // cho đồng bộ với RoomCardVertical
+    fontWeight: "700",
+    fontSize: 13,
+  },
+
   btnRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -312,13 +408,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   primary: { backgroundColor: "#2E76FF" },
-  primaryText: { color: "#FFFFFF", fontWeight: "600" },
-  cancel: { backgroundColor: "#EFEFEF" },
-  cancelText: { color: "#101010", fontWeight: "600" },
+  primaryText: { color: "#FFFFFF", fontWeight: "600", fontSize: 13 },
+  cancel: { backgroundColor: "#FF5555" },
+  cancelText: { color: "#FFFFFF", fontWeight: "600", fontSize: 13 },
   outline: {
     borderWidth: 1,
     borderColor: "#2E76FF",
     backgroundColor: "#FFFFFF",
   },
-  outlineText: { color: "#2E76FF", fontWeight: "600" },
+  outlineText: { color: "#2E76FF", fontWeight: "600", fontSize: 13 },
 });

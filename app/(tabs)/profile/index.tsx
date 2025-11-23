@@ -71,7 +71,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <HeaderScreen title="Hồ sơ" />
 
       <View style={styles.avatarWrap}>
@@ -137,7 +137,7 @@ export default function ProfileScreen() {
                 onPress={() => setShowLogout(false)}
                 activeOpacity={0.8}
               >
-                <Text style={{ color: COLOR.black, fontWeight: "600" }}>
+                <Text style={{ color: COLOR.black, fontWeight: "600", fontSize: 13, }}>
                   Hủy
                 </Text>
               </TouchableOpacity>
@@ -146,7 +146,7 @@ export default function ProfileScreen() {
                 onPress={handleConfirmLogout}
                 activeOpacity={0.8}
               >
-                <Text style={{ color: COLOR.white, fontWeight: "600" }}>
+                <Text style={{ color: COLOR.white, fontWeight: "600", fontSize: 13, }}>
                   Đồng ý
                 </Text>
               </TouchableOpacity>
@@ -178,14 +178,14 @@ const styles = StyleSheet.create({
   name: {
     textAlign: "center",
     marginTop: 10,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "600",
     color: COLOR.black,
   },
   email: {
     textAlign: "center",
     marginTop: 4,
-    fontSize: 14,
+    fontSize: 12,
     color: "#555",
   },
   list: { paddingHorizontal: 16, marginTop: 20, gap: 10 },
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   rowLeft: { flexDirection: "row", gap: 10, alignItems: "center" },
-  rowText: { fontSize: 15, color: COLOR.black },
+  rowText: { fontSize: 12, color: COLOR.black },
   overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "flex-end" },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
@@ -212,8 +212,8 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 10,
   },
-  sheetTitle: { fontSize: 16, fontWeight: "600", color: COLOR.black },
-  sheetDesc: { color: "#555" },
+  sheetTitle: { fontSize: 15, fontWeight: "600", color: COLOR.black },
+  sheetDesc: { color: "#555", fontSize: 13, },
   sheetActions: { flexDirection: "row", gap: 10 },
   sheetBtn: {
     flex: 1,
@@ -221,5 +221,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+    fontSize: 13,
   },
 });

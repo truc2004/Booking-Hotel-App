@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "700",
     color: "#2E2E2E",
     marginHorizontal: 10,

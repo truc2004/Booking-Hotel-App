@@ -234,6 +234,8 @@ export default function BookingScreen() {
         const bookingData = {
             account_id: account?.account_id || null,
             room_id,
+            check_in_date: check_in,   // string ISO từ màn trước
+            check_out_date: check_out,
             user_booking_info: {
                 full_name: form.name,
                 phone: form.phone,
@@ -249,7 +251,7 @@ export default function BookingScreen() {
             room_price: room?.price_per_night ?? 0,
             total_price: totalAmount,
             note: note || "",
-            status: "PENDING",
+            status: "upcoming",
         };
 
         router.push({

@@ -2,12 +2,12 @@ import HeaderScreen from "@/components/HeaderScreen";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -74,7 +74,6 @@ const CONTACTS = [
 export default function HelpCenterScreen() {
   const [activeTab, setActiveTab] = useState<"Câu hỏi" | "Liên hệ">("Câu hỏi");
   const [activeCat, setActiveCat] = useState("all");
-  // không mở sẵn câu hỏi đầu
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
@@ -119,7 +118,7 @@ export default function HelpCenterScreen() {
 
       {activeTab === "Câu hỏi" ? (
         <>
-          {/* ✅ BỌC LẠI THANH FILTER TRONG VIEW CỐ ĐỊNH CAO */}
+          {/* filter categories */}
           <View style={styles.filterWrapper}>
             <ScrollView
               horizontal
@@ -143,7 +142,7 @@ export default function HelpCenterScreen() {
             </ScrollView>
           </View>
 
-          {/* list faq - dính sát filter luôn */}
+          {/* list faq */}
           <ScrollView
             style={{ flex: 1 }}
             contentContainerStyle={{
@@ -202,6 +201,7 @@ export default function HelpCenterScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLOR.white },
+
   searchWrap: {
     marginHorizontal: 16,
     marginTop: 16,
@@ -213,7 +213,11 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 12,
   },
-  searchInput: { flex: 1 },
+  searchInput: {
+    flex: 1,
+    fontSize: 12,
+  },
+
   tabs: {
     flexDirection: "row",
     paddingHorizontal: 16,
@@ -224,10 +228,9 @@ const styles = StyleSheet.create({
   },
   tabItem: { paddingBottom: 10 },
   tabItemActive: { borderBottomWidth: 2.5, borderBottomColor: COLOR.blue },
-  tabText: { color: "#707070", fontWeight: "500" },
+  tabText: { color: "#707070", fontWeight: "500", fontSize: 12 },
   tabTextActive: { color: COLOR.black },
 
-  // 👇 cái này để giết khoảng trắng
   filterWrapper: {
     height: 42,
     marginTop: 10,
@@ -247,8 +250,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   chipActive: { backgroundColor: COLOR.blue },
-  chipText: { color: COLOR.black },
-  chipTextActive: { color: COLOR.white, fontWeight: "600" },
+  chipText: { color: COLOR.black, fontSize: 12 },
+  chipTextActive: { color: COLOR.white, fontWeight: "600", fontSize: 12 },
 
   faqItem: {
     backgroundColor: COLOR.white,
@@ -263,8 +266,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  faqTitle: { fontSize: 14, fontWeight: "600", color: COLOR.black },
-  faqDesc: { marginTop: 6, color: "#555" },
+  // tiêu đề 13
+  faqTitle: { fontSize: 13, fontWeight: "600", color: COLOR.black },
+  // nội dung 12
+  faqDesc: { marginTop: 6, color: "#555", fontSize: 12 },
+
   contactItem: {
     backgroundColor: COLOR.white,
     borderRadius: 16,
@@ -279,6 +285,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   contactLeft: { flexDirection: "row", gap: 12, alignItems: "center" },
-  contactText: { fontWeight: "600", color: COLOR.black },
-  contactSub: { marginTop: 6, marginLeft: 34, color: "#555" },
+  // tiêu đề 13
+  contactText: { fontWeight: "600", color: COLOR.black, fontSize: 13 },
+  // nội dung 12
+  contactSub: {
+    marginTop: 6,
+    marginLeft: 34,
+    color: "#555",
+    fontSize: 12,
+  },
 });

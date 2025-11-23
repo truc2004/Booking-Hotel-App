@@ -1,14 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { useState } from "react";
 import {
   Dimensions,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Room } from "../types/room";
 import { Hotel } from "@/types/hotel";
@@ -27,26 +26,40 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadHotel = async () => {
       try {
         const data: Hotel = await fetchHotelById(room.hotel_id);
+        if (!isMounted) return;
         setHotel(data);
       } catch (err: any) {
         console.error(err);
+        if (!isMounted) return;
         setError(err.message || "Lỗi tải thông tin khách sạn");
       } finally {
+        if (!isMounted) return;
         setLoading(false);
       }
     };
 
     loadHotel();
-  }, [room]);
 
-  const handleLike = () => setLiked(!liked);
+    return () => {
+      isMounted = false;
+    };
+  }, [room.hotel_id]);
+
+  const handleLike = () => setLiked((prev) => !prev);
 
   const handleViewDetail = () => {
     router.push(`/(tabs)/home/roomDetail?room_id=${room.room_id}`);
   };
+
+  // ✅ CHỈ RENDER KHI ĐÃ LOAD XONG HOTEL & KHÔNG LỖI
+  if (loading || !hotel || error) {
+    return null;
+  }
 
   return (
     <TouchableOpacity
@@ -54,14 +67,10 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
       onPress={handleViewDetail}
       activeOpacity={0.9}
     >
-      {/* Thẻ chính */}
       <View style={styles.card}>
         {/* Ảnh phòng */}
         <View style={styles.imageWrapper}>
-          <Image
-            source={{ uri: room.images[0] }}
-            style={styles.image}
-          />
+          <Image source={{ uri: room.images[0] }} style={styles.image} />
 
           {/* Nút yêu thích */}
           <TouchableOpacity style={styles.heartButton} onPress={handleLike}>
@@ -80,25 +89,42 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
         </View>
 
         {/* Thông tin */}
-        <View style={styles.info}>
-          <Text style={styles.name} numberOfLines={1}>
-            {hotel?.name}
-          </Text>
+<View style={styles.info}>
+  <Text
+    style={styles.name}
+    numberOfLines={2}
+    ellipsizeMode="tail"
+  >
+    {hotel.name}
+  </Text>
 
-          <View style={styles.locationContainer}>
-            <Image
-              source={require("../assets/images/icon/map.png")}
-              style={styles.iconMap}
-            />
-            <Text style={styles.locationText} numberOfLines={1}>
-              {hotel?.addresses?.detailAddress}, {hotel?.addresses?.district}
-            </Text>
-          </View>
+  <View style={styles.locationContainer}>
+    <Image
+      source={require("../assets/images/icon/map.png")}
+      style={styles.iconMap}
+    />
+    <Text
+      style={styles.locationText}
+      numberOfLines={2}
+      ellipsizeMode="tail"
+    >
+      {hotel.addresses?.detailAddress}, {hotel.addresses?.district}
+    </Text>
+  </View>
 
-          <Text style={styles.price}>
-            {room.price_per_night.toLocaleString()}₫ / đêm
-          </Text>
-        </View>
+  <View style={styles.priceRow}>
+    <Ionicons
+      name="cash-outline"
+      size={14}
+      color="#797979"
+      style={{ marginRight: 4 }}
+    />
+    <Text style={styles.price}>
+      {room.price_per_night.toLocaleString()}₫ / đêm
+    </Text>
+  </View>
+</View>
+
       </View>
     </TouchableOpacity>
   );
@@ -111,23 +137,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 8,
     marginRight: 15,
-
-    // Bóng (iOS)
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
-
-    // Bóng (Android)
     elevation: 5,
   },
-
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
     overflow: "hidden",
   },
-
   imageWrapper: {
     position: "relative",
     width: "100%",
@@ -136,13 +156,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     overflow: "hidden",
   },
-
   image: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
   },
-
   heartButton: {
     position: "absolute",
     top: 10,
@@ -151,7 +169,6 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 20,
   },
-
   rating: {
     position: "absolute",
     top: 10,
@@ -163,48 +180,54 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-
   ratingText: {
     marginLeft: 3,
     fontWeight: "600",
     color: "#333",
     fontSize: 12,
   },
-
-  info: {
+   info: {
     padding: 10,
   },
 
   name: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "600",
     marginBottom: 4,
     color: "#222",
+    flex: 1,           // cho phép chiếm hết chiều ngang
   },
 
   locationContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",  // để text nhiều dòng vẫn đẹp
     marginTop: 4,
   },
 
   iconMap: {
-    height: 16,
-    width: 16,
+    height: 15,
+    width: 15,
     tintColor: "#797979",
     marginRight: 5,
+    marginTop: 2,              // lệch nhẹ cho cân với text 2 dòng
   },
 
   locationText: {
-    fontSize: 13,
+    fontSize: 11,
     color: "#555",
-    flexShrink: 1,
+    flex: 1,                   // cho phép wrap trong phần còn lại
+  },
+
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 6,
   },
 
   price: {
     color: "#27ae60",
     fontWeight: "700",
-    marginTop: 6,
-    fontSize: 13,
+    fontSize: 11,
+    marginLeft: 2,
   },
 });

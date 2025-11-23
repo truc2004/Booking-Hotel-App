@@ -26,6 +26,9 @@ export interface Booking {
   num_adults: number;
   num_children: number;
 
+  check_in_date: Date,
+  check_out_date: Date,
+
   booking_date: string | Date;
 
   extra_fee: number;

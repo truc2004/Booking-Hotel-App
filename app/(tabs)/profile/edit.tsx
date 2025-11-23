@@ -4,7 +4,7 @@ import HeaderScreen from "@/components/HeaderScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/src/auth/auth-store";
@@ -78,16 +78,12 @@ export default function EditProfileScreen() {
     }
   };
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <HeaderScreen title="Thông tin của bạn" />
+   if (loading)
+      return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text>Đang tải thông tin...</Text>
+          <ActivityIndicator size="large" color="#2E76FF" />
         </View>
-      </SafeAreaView>
-    );
-  }
+      );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -142,7 +138,13 @@ export default function EditProfileScreen() {
           />
         </Field>
 
-        <ButtonSubmit title="Cập nhật thông tin" onPress={handleUpdate} />
+        <TouchableOpacity style={{backgroundColor: '#2E76FF', padding: 10, justifyContent: "center", alignItems: "center", borderRadius: 15, marginTop: 15,
+         }}  onPress={handleUpdate} >
+          <Text style={{ color: "#fff", fontWeight: "600", fontSize: 13 }}>
+  Cập nhật thông tin
+</Text>
+        </TouchableOpacity>
+        
       </View>
     </SafeAreaView>
   );
@@ -168,6 +170,7 @@ function Field({
   );
 }
 
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#F8FAFF" },
   topbar: {
@@ -176,9 +179,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 8,
     height: 44,
+
   },
   topTitle: { fontSize: 18, fontWeight: "600", color: "#101010" },
-  center: { alignItems: "center", marginVertical: 12 },
+  center: { alignItems: "center", marginVertical: 12, marginTop: 50 },
   avatarWrap: { position: "relative" },
   avatar: { width: 96, height: 96, borderRadius: 48 },
   avatarEdit: {
@@ -201,7 +205,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 6,
   },
-  label: { color: "#101010", fontWeight: "500" },
+  // TITLE field: font 13
+  label: {
+    color: "#101010",
+    fontWeight: "500",
+    fontSize: 13,
+  },
+  // TEXT trong input: font 12
   input: {
     height: 44,
     borderRadius: 12,
@@ -210,8 +220,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#EFEFEF",
     color: "#101010",
+    fontSize: 12,
   },
   link: { color: "#2E76FF", fontWeight: "600" },
+
   btn: {
     marginTop: 18,
     height: 48,
@@ -220,7 +232,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  btnText: { color: "#fff", fontWeight: "600" },
+  // Nếu có dùng btn + btnText thì text nút: font 13
+  btnText: { color: "#fff", fontWeight: "600", fontSize: 13 },
 
   genderRow: {
     flexDirection: "row",
@@ -242,9 +255,11 @@ const styles = StyleSheet.create({
   },
   genderText: {
     color: "#101010",
+    fontSize: 12,       // nếu muốn đồng bộ content = 12
   },
   genderTextActive: {
     color: COLOR.blue,
     fontWeight: "600",
+    fontSize: 12,       // idem
   },
 });

@@ -16,6 +16,7 @@ import {
     Dimensions,
     KeyboardAvoidingView,
     ActivityIndicator,
+    Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,6 +24,7 @@ import ButtonBackScreen from "@/components/ButtonBackScreen";
 import ButtonBottom from "@/components/ButtonBottom";
 import { Hotel } from '@/types/hotel';
 import { fetchHotelById } from '@/api/hotelApi';
+import { bookingApi } from '@/api/bookingApi';
 
 const BUTTON_HEIGHT = 120; // Giữ nguyên để đảm bảo khoảng trống
 
@@ -130,19 +132,55 @@ export default function BookingScreen() {
         return date.toLocaleDateString("vi-VN", { day: "numeric", month: "short", year: "numeric" });
     };
 
-    const handleBooking = () => {
-        router.push({
-            pathname: "/(tabs)/home/order",
-            params: {
-                room_id,
-                hotel_id,
-                check_in: checkInDate.toISOString(),
-                check_out: checkOutDate.toISOString(),
-                adults: adults.toString(),
-                children: children.toString(),
-                note
+    const handleBooking = async () => {
+
+        if (!room_id) return;
+
+        try {
+            // 1) Lấy tất cả booking hiện có của phòng này
+            const existing = await bookingApi.getByRoom(room_id as string);
+
+            // 2) Chuyển ngày chọn sang timestamp
+            const selectedStart = checkInDate.getTime();
+            const selectedEnd = checkOutDate.getTime(); // [start, end)
+
+            // 3) Kiểm tra trùng ngày:
+            //    Có trùng nếu: booking.check_in_date < selectedEnd
+            //                  và   booking.check_out_date > selectedStart
+            const hasConflict = existing.some((b) => {
+                const start = new Date(b.check_in_date).getTime();
+                const end = new Date(b.check_out_date).getTime();
+                return start < selectedEnd && end > selectedStart;
+            });
+
+            if (hasConflict) {
+                Alert.alert(
+                    "Hết phòng",
+                    "Phòng này đã được đặt trong khoảng ngày bạn chọn. Vui lòng chọn ngày khác."
+                );
+                return; // không cho đi tiếp
             }
-        });
+
+            // 4) Nếu không trùng => cho qua bước Order như cũ
+            router.push({
+                pathname: "/(tabs)/home/order",
+                params: {
+                    room_id,
+                    hotel_id,
+                    check_in: checkInDate.toISOString(),
+                    check_out: checkOutDate.toISOString(),
+                    adults: adults.toString(),
+                    children: children.toString(),
+                    note,
+                },
+            });
+        } catch (err) {
+            console.log("Error check room:", err);
+            Alert.alert(
+                "Lỗi",
+                "Không kiểm tra được tình trạng phòng. Vui lòng thử lại sau."
+            );
+        }
     };
 
     return (

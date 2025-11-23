@@ -20,4 +20,24 @@ export const bookingApi = {
     const res = await axios.post(API_BASE_URL, bookingPayload);
     return res.data;
   },
+
+  async getByRoom(roomId: string): Promise<
+    {
+      booking_id: string;
+      check_in_date: string;
+      check_out_date: string;
+      status: string;
+    }[]
+  > {
+    const res = await axios.get(`${API_BASE_URL}/by-room/${roomId}`);
+    return res.data;
+  },
+
+  async cancel(bookingId: string, reason: string): Promise<Booking> {
+    const res = await axios.patch(
+      `${API_BASE_URL}/${bookingId}/cancel`,
+      { reason }
+    );
+    return res.data.booking;
+  },
 };

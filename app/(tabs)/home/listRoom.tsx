@@ -1,5 +1,3 @@
-// app/(tabs)/home/listRoom.tsx
-
 import HeaderScreen from "@/components/HeaderScreen";
 import SearchAndFilterScreen from "@/components/SearchAndFilter";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,7 +18,7 @@ import { fetchRooms } from "@/api/roomApi";
 import RoomCard from "@/components/RoomCard";
 import { Room } from "@/types/room";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 export default function ListRoomScreen() {
   const { q } = useLocalSearchParams<{ q?: string }>();
@@ -30,7 +28,6 @@ export default function ListRoomScreen() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // gọi API chung với home
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -45,29 +42,25 @@ export default function ListRoomScreen() {
     loadData();
   }, []);
 
-  // reset về trang 1 mỗi khi từ khóa search thay đổi
+  // mỗi lần từ khóa search thay đổi → quay về trang 1
   useEffect(() => {
     setCurrentPage(1);
   }, [q]);
 
-  // keyword từ query
   const keyword = useMemo(
     () => (typeof q === "string" ? q.trim().toLowerCase() : ""),
     [q]
   );
 
-  // lọc theo keyword trên toàn bộ dữ liệu phòng
   const filteredRooms = useMemo(() => {
     if (!keyword) return rooms;
 
     return rooms.filter((room) => {
-      // nếu muốn chắc ăn, quét toàn bộ object bằng JSON.stringify
       const searchable = JSON.stringify(room ?? {}).toLowerCase();
       return searchable.includes(keyword);
     });
   }, [rooms, keyword]);
 
-  // phân trang
   const totalPages = Math.max(1, Math.ceil(filteredRooms.length / PAGE_SIZE));
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const currentRooms = filteredRooms.slice(startIndex, startIndex + PAGE_SIZE);
@@ -84,6 +77,35 @@ export default function ListRoomScreen() {
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
+
+  // ====== CHỈ HIỂN THỊ TỐI ĐA 3 SỐ TRANG ======
+  const visiblePages = 3;
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= visiblePages) {
+      // nếu tổng số trang <= 3 thì cho hiện hết
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    let start = currentPage - 1;
+    let end = currentPage + 1;
+
+    // chạm đầu
+    if (start < 1) {
+      start = 1;
+      end = visiblePages;
+    }
+    // chạm cuối
+    else if (end > totalPages) {
+      end = totalPages;
+      start = totalPages - visiblePages + 1;
+    }
+
+    const arr: number[] = [];
+    for (let p = start; p <= end; p++) {
+      arr.push(p);
+    }
+    return arr;
+  }, [currentPage, totalPages]);
 
   if (loading) {
     return (
@@ -103,14 +125,13 @@ export default function ListRoomScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* HEADER */}
       <HeaderScreen title="Danh sách phòng" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 20 }}
+        contentContainerStyle={styles.scrollContent}
       >
-        {/* SEARCH + FILTER: chỉ hiện 1 lần */}
+        {/* SEARCH */}
         <SearchAndFilterScreen />
 
         {/* LIST ROOM */}
@@ -123,65 +144,77 @@ export default function ListRoomScreen() {
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => <RoomCard room={item} />}
+            contentContainerStyle={styles.listContent}
           />
         )}
 
-        {/* PAGINATION */}
-        <View style={styles.paginationContainer}>
-          {/* Prev */}
-          <LinearGradient
-            colors={["#4D90FE", "#2E76FF"]}
-            style={[
-              styles.navButton,
-              currentPage === 1 && styles.disabledButton,
-            ]}
-          >
-            <TouchableOpacity disabled={currentPage === 1} onPress={handlePrev}>
-              <Text style={styles.navText}>‹</Text>
-            </TouchableOpacity>
-          </LinearGradient>
-
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }).map((_, idx) => {
-            const page = idx + 1;
-            const isActive = page === currentPage;
-            return (
+        {/* PHÂN TRANG – chỉ render khi có hơn 1 trang */}
+        {filteredRooms.length > PAGE_SIZE && totalPages > 1 && (
+          <View style={styles.paginationWrapper}>
+            <View style={styles.paginationContainer}>
+              {/* Prev */}
               <TouchableOpacity
-                key={page}
-                onPress={() => handleGoPage(page)}
+                disabled={currentPage === 1}
+                onPress={handlePrev}
+                activeOpacity={currentPage === 1 ? 1 : 0.8}
                 style={[
-                  styles.pageButton,
-                  isActive && styles.activePageButton,
+                  styles.navButton,
+                  currentPage === 1 && styles.disabledButton,
                 ]}
               >
-                <Text
-                  style={[
-                    styles.pageText,
-                    isActive && styles.activePageText,
-                  ]}
+                <LinearGradient
+                  colors={["#4D90FE", "#2E76FF"]}
+                  style={styles.navButtonGradient}
                 >
-                  {page}
-                </Text>
+                  <Text style={styles.navText}>‹</Text>
+                </LinearGradient>
               </TouchableOpacity>
-            );
-          })}
 
-          {/* Next */}
-          <LinearGradient
-            colors={["#4D90FE", "#2E76FF"]}
-            style={[
-              styles.navButton,
-              currentPage === totalPages && styles.disabledButton,
-            ]}
-          >
-            <TouchableOpacity
-              disabled={currentPage === totalPages}
-              onPress={handleNext}
-            >
-              <Text style={styles.navText}>›</Text>
-            </TouchableOpacity>
-          </LinearGradient>
-        </View>
+              {/* TỐI ĐA 3 SỐ TRANG */}
+              {pageNumbers.map((page) => {
+                const isActive = page === currentPage;
+                return (
+                  <TouchableOpacity
+                    key={page}
+                    onPress={() => handleGoPage(page)}
+                    activeOpacity={0.8}
+                    style={[
+                      styles.pageButton,
+                      isActive && styles.activePageButton,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.pageText,
+                        isActive && styles.activePageText,
+                      ]}
+                    >
+                      {page}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+
+              {/* Next */}
+              <TouchableOpacity
+                disabled={currentPage === totalPages}
+                onPress={handleNext}
+                activeOpacity={currentPage === totalPages ? 1 : 0.8}
+                style={[
+                  styles.navButton,
+                  currentPage === totalPages && styles.disabledButton,
+                ]}
+              >
+                <LinearGradient
+                  colors={["#4D90FE", "#2E76FF"]}
+                  style={styles.navButtonGradient}
+                >
+                  <Text style={styles.navText}>›</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -191,6 +224,16 @@ export default function ListRoomScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
+
+  scrollContent: {
+    paddingHorizontal: 19,
+    paddingTop: 8,
+    paddingBottom: 24,
+  },
+
+  listContent: {
+    paddingBottom: 8,
+  },
 
   center: {
     flex: 1,
@@ -205,45 +248,61 @@ const styles = StyleSheet.create({
     color: "#777",
   },
 
+  paginationWrapper: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+
   paginationContainer: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    justifyContent: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "#F1F5F9",
   },
 
   navButton: {
     width: 40,
     height: 40,
-    borderRadius: 8,
-    marginHorizontal: 6,
+    borderRadius: 999,
+    overflow: "hidden",
+    marginHorizontal: 4,
+  },
+
+  navButtonGradient: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
 
   disabledButton: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
 
   navText: {
-    fontSize: 22,
+    fontSize: 20,
     color: "#FFFFFF",
+    fontWeight: "600",
   },
 
   pageButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 4,
     borderWidth: 1,
     borderColor: "#2E76FF",
+    backgroundColor: "#FFFFFF",
   },
 
   pageText: {
     fontSize: 14,
     color: "#2E76FF",
+    fontWeight: "500",
   },
 
   activePageButton: {
@@ -252,5 +311,6 @@ const styles = StyleSheet.create({
 
   activePageText: {
     color: "#FFFFFF",
+    fontWeight: "700",
   },
 });
