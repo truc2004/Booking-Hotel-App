@@ -1,120 +1,3 @@
-// import ButtonBackScreen from "@/components/ButtonBackScreen";
-// import HeaderScreen from "@/components/HeaderScreen";
-// import { router } from "expo-router";
-// import React, { useState } from "react";
-// import {
-//     FlatList,
-//     StyleSheet,
-//     Text,
-//     TextInput,
-//     TouchableOpacity,
-//     View,
-// } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-
-// export default function SearchScreen() {
-//   const [query, setQuery] = useState("");
-//   const [recentSearches, setRecentSearches] = useState<string[]>([
-   
-//   ]);
-
-//   const handleSearch = (keyword?: string) => {
-//     const q = (keyword ?? query).trim();
-//     if (!q) return;
-
-//     setRecentSearches((prev) => {
-//       const list = [q, ...prev.filter((item) => item !== q)];
-//       return list.slice(0, 5);
-//     });
-
-//     router.push({
-//       pathname: "/(tabs)/home/listRoom",
-//       params: { q },
-//     });
-//   };
-
-//   return (
-//     <SafeAreaView style={styles.container} edges={["top"]}>
-//       <View style={styles.header}>
-//         <ButtonBackScreen />
-        
-//       </View>
-    
-
-//       {/* Ô search */}
-//       <View style={styles.searchBox}>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Tìm kiếm..."
-//           value={query}
-//           onChangeText={setQuery}
-//           returnKeyType="search"
-//           onSubmitEditing={() => handleSearch()}
-//         />
-//         {/* <TouchableOpacity onPress={() => handleSearch()}>
-//           <Text style={styles.btnText}>Tìm</Text>
-//         </TouchableOpacity> */}
-//       </View>
-
-//       {/* Recent Search */}
-//       <Text style={styles.sectionTitle}>Tìm kiếm gần đây</Text>
-//       <FlatList
-//         data={recentSearches}
-//         keyExtractor={(item) => item}
-//         renderItem={({ item }) => (
-//           <View style={styles.recentRow}>
-//             <TouchableOpacity
-//               style={{ flex: 1 }}
-//               onPress={() => handleSearch(item)}
-//             >
-//               <Text style={styles.recentText}>{item}</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity
-//               onPress={() =>
-//                 setRecentSearches((prev) => prev.filter((r) => r !== item))
-//               }
-//             >
-//               <Text style={styles.remove}>✕</Text>
-//             </TouchableOpacity>
-//           </View>
-//         )}
-//       />
-//     </SafeAreaView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: "#FFFFFF", paddingHorizontal: 16 },
-//   header: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     height: 60,
-//   },
-//   title: { fontSize: 18, fontWeight: "600" },
-//   searchBox: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginTop: 12,
-//     borderRadius: 12,
-//     borderWidth: 1,
-//     borderColor: "#E0E0E0",
-//     paddingHorizontal: 12,
-//   },
-//   input: { flex: 1, height: 44 },
-//   btnText: { color: "#2E76FF", fontWeight: "600", marginLeft: 8 },
-//   sectionTitle: { marginTop: 20, fontSize: 16, fontWeight: "600" },
-//   recentRow: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingVertical: 10,
-//     borderBottomWidth: 0.5,
-//     borderBottomColor: "#EEE",
-//   },
-//   recentText: { fontSize: 14 },
-//   remove: { fontSize: 16, color: "#999", paddingHorizontal: 8 },
-// });
-
 import HeaderScreen from "@/components/HeaderScreen";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -470,8 +353,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  // Tiêu đề mục -> 13
   cardTitle: {
-    fontSize: 17,
+    fontSize: 13,
     fontWeight: "700",
     color: COLOR.text,
     marginBottom: 12,
@@ -488,21 +372,23 @@ const styles = StyleSheet.create({
     height: 44,
     backgroundColor: "#F9FAFB",
   },
+  // Nội dung còn lại -> 12
   input: {
     flex: 1,
     height: "100%",
-    fontSize: 15,
+    fontSize: 12,
     color: COLOR.text,
   },
   clearText: {
-    fontSize: 16,
+    fontSize: 12,
     color: "#9CA3AF",
     paddingHorizontal: 4,
   },
+  // Tiêu đề nhỏ (Tìm kiếm gần đây) cũng là tiêu đề mục -> 13
   sectionTitle: {
     marginTop: 12,
     marginBottom: 4,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "600",
     color: COLOR.text,
   },
@@ -513,8 +399,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "#E5E7EB",
   },
-  recentText: { fontSize: 14, color: COLOR.subText },
-  remove: { fontSize: 16, color: "#9CA3AF", paddingHorizontal: 8 },
+  recentText: { fontSize: 12, color: COLOR.subText },
+  remove: { fontSize: 12, color: "#9CA3AF", paddingHorizontal: 8 },
 
   // OPTION RADIO
   optionRow: {
@@ -543,7 +429,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   optionLabel: {
-    fontSize: 15,
+    fontSize: 12,
     color: "#475569",
   },
   optionLabelActive: {
@@ -563,7 +449,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   adjustLabel: {
-    fontSize: 15,
+    fontSize: 12,
     color: COLOR.text,
     width: 50,
   },
@@ -577,11 +463,11 @@ const styles = StyleSheet.create({
   },
   adjustBtnText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 18, // có thể giữ 18–20 cho dễ bấm, không nhất thiết 12
     fontWeight: "bold",
   },
   adjustValue: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "600",
     color: COLOR.text,
     minWidth: 90,
@@ -609,7 +495,7 @@ const styles = StyleSheet.create({
     borderColor: COLOR.primary,
   },
   sortChipText: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#64748B",
     fontWeight: "500",
   },
@@ -651,12 +537,12 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: COLOR.primary,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "600",
   },
   applyText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "600",
   },
 });

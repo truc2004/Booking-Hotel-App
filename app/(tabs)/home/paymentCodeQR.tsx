@@ -3,7 +3,7 @@ import HeaderScreen from "@/components/HeaderScreen";
 import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PaymentQRScreen() {
@@ -82,11 +82,13 @@ export default function PaymentQRScreen() {
           {/* Thẻ trắng chứa QR */}
           <View style={styles.qrCard}>
             <View style={styles.qrBox}>
-              {/* QR giả lập */}
-              <View style={styles.qrFakeOuter}>
-                <View style={styles.qrFakeInner} />
-              </View>
-            </View>
+  <Image
+    source={require("../../../assets/images/qr.jpg")}
+    style={styles.qrImage}
+    resizeMode="contain"
+  />
+</View>
+
 
             {/* Thông tin số tiền cần thanh toán */}
             <View style={styles.qrInfoContainer}>
@@ -179,7 +181,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
+  marginVertical: 24,
+  
   },
+  qrImage: {
+  width: 220,
+  height: 220,
+  borderRadius: 16,
+  backgroundColor: "#fff",
+},
   qrFakeOuter: {
     width: 160,
     height: 160,

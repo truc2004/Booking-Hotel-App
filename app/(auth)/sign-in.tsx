@@ -6,13 +6,13 @@ import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const COLOR = { blue: "#2E76FF", sub: "#6B7280", border: "#E5E7EB", text: "#101010" };
 
@@ -36,8 +36,10 @@ export default function SignIn() {
   const disabled = !email || !pass;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <ButtonBackScreen />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
+      <View style={{}}>
+        <ButtonBackScreen />
+      </View>
 
       <View style={s.wrap}>
         <Image

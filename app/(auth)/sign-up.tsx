@@ -1,5 +1,6 @@
 
 import { accountApi } from "@/api/accountApi";
+import ButtonBackScreen from "@/components/ButtonBackScreen";
 import { humanizeAuthError } from "@/src/auth/auth-errors";
 import { useAuth } from "@/src/auth/auth-store";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,13 +8,13 @@ import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const COLOR = { blue: "#2E76FF", text: "#101010", sub: "#6B7280", border: "#E5E7EB" };
 
@@ -48,7 +49,10 @@ export default function SignUp() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
+       <View>
+        <ButtonBackScreen />
+      </View>
       <View style={s.wrap}>
         <Image
           source={require("../../assets/images/LogoBookingApp.png")}

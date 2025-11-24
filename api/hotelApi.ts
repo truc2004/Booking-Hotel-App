@@ -8,3 +8,9 @@ export async function fetchHotelById(hotel_id: string): Promise<Hotel> {
   if (!res.ok) throw new Error("Lỗi tải thông tin khách sạn!");
   return await res.json();
 }
+
+export async function fetchHotels(): Promise<Hotel[]> {
+  const res = await fetch(API_URL);
+  if (!res.ok) throw new Error("Lỗi tải danh sách khách sạn!");
+  return await res.json();
+}

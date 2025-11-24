@@ -19,21 +19,22 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="favorite"
-        options={{
-          title: "Yêu thích",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" color={color} size={size} />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="historyBooking"
         options={{
-          title: "Lịch sử",
+          title: "Đơn của tôi",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time-outline" color={color} size={size} />
+          ),
+        }}
+      />
+       <Tabs.Screen
+        name="message"
+        options={{
+          title: "Tin nhắn",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" color={color} size={size} />
           ),
         }}
       />
