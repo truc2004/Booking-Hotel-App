@@ -145,12 +145,30 @@ export default function ReceiptScreen() {
   }
 
   const hotelName = booking.hotel_info?.name ?? "Không rõ tên khách sạn";
+  // const bookingDateObj = new Date(booking.booking_date);
+  // const bookingDate = bookingDateObj.toLocaleDateString("vi-VN");
+  // const bookingDateCheckIn = booking.check_in_date.toLocaleDateString("vi-VN");
+  // const bookingDateCheckOut = booking.check_out_date.toLocaleDateString("vi-VN");
+  // const bookingTime = bookingDateObj.toLocaleTimeString("vi-VN", {
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  // });
   const bookingDateObj = new Date(booking.booking_date);
   const bookingDate = bookingDateObj.toLocaleDateString("vi-VN");
   const bookingTime = bookingDateObj.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  // Nếu có check_in_date / check_out_date -> dùng, nếu không có -> fallback bookingDate
+  const checkInDate = booking.check_in_date
+    ? new Date(booking.check_in_date).toLocaleDateString("vi-VN")
+    : bookingDate;
+
+  const checkOutDate = booking.check_out_date
+    ? new Date(booking.check_out_date).toLocaleDateString("vi-VN")
+    : bookingDate;
+
   const totalGuests = (booking.num_adults ?? 0) + (booking.num_children ?? 0);
 
   const amount = booking.room_price ?? booking.total_price ?? 0;
@@ -172,7 +190,7 @@ export default function ReceiptScreen() {
         <Text style={styles.headerTitle}>Hóa đơn điện tử</Text>
         <View style={{ width: 40 }} />
       </View>  */}
-      <HeaderScreen title="Hóa đơn điện tử"/>
+      <HeaderScreen title="Hóa đơn điện tử" />
 
 
       <ScrollView
@@ -197,15 +215,17 @@ export default function ReceiptScreen() {
           </View>
 
           {/* Booking Details */}
+
           <View style={styles.section}>
             <InfoRow
               label="Ngày đặt"
               value={`${bookingDate} | ${bookingTime}`}
             />
-            <InfoRow label="Ngày nhận phòng" value={bookingDate} />
-            <InfoRow label="Ngày trả phòng" value={bookingDate} />
+            <InfoRow label="Ngày nhận phòng" value={checkInDate} />
+            <InfoRow label="Ngày trả phòng" value={checkOutDate} />
             <InfoRow label="Số khách" value={`${totalGuests} khách`} />
           </View>
+
 
           <View style={styles.divider} />
 
@@ -214,7 +234,7 @@ export default function ReceiptScreen() {
             <InfoRow label="Tên khách" value={customerName} />
             <InfoRow label="Số điện thoại" value={phoneNumber} />
             <InfoRow label="Email" value={email} />
-           
+
           </View>
 
           <View style={styles.divider} />

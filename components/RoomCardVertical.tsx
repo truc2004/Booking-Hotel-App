@@ -1,3 +1,4 @@
+
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
@@ -12,6 +13,7 @@ import {
 import { Room } from "../types/room";
 import { Hotel } from "@/types/hotel";
 import { fetchHotelById } from "@/api/hotelApi";
+import { useFavoriteRooms } from "@/hooks/useFavoriteRooms";
 
 const { width } = Dimensions.get("window");
 
@@ -20,10 +22,13 @@ type RoomCardProps = {
 };
 
 export default function RoomCardVertical({ room }: RoomCardProps) {
-  const [liked, setLiked] = useState(false);
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // ⬅️ lấy từ store
+  const { toggleFavorite, isFavorite } = useFavoriteRooms();
+  const liked = isFavorite(room.room_id);
 
   useEffect(() => {
     let isMounted = true;
@@ -50,7 +55,9 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
     };
   }, [room.hotel_id]);
 
-  const handleLike = () => setLiked((prev) => !prev);
+  const handleLike = () => {
+    toggleFavorite(room.room_id); // ⬅️ chỉ gọi store
+  };
 
   const handleViewDetail = () => {
     router.push(`/(tabs)/home/roomDetail?room_id=${room.room_id}`);
@@ -89,42 +96,41 @@ export default function RoomCardVertical({ room }: RoomCardProps) {
         </View>
 
         {/* Thông tin */}
-<View style={styles.info}>
-  <Text
-    style={styles.name}
-    numberOfLines={2}
-    ellipsizeMode="tail"
-  >
-    {hotel.name}
-  </Text>
+        <View style={styles.info}>
+          <Text
+            style={styles.name}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {hotel.name}
+          </Text>
 
-  <View style={styles.locationContainer}>
-    <Image
-      source={require("../assets/images/icon/map.png")}
-      style={styles.iconMap}
-    />
-    <Text
-      style={styles.locationText}
-      numberOfLines={2}
-      ellipsizeMode="tail"
-    >
-      {hotel.addresses?.detailAddress}, {hotel.addresses?.district}
-    </Text>
-  </View>
+          <View style={styles.locationContainer}>
+            <Image
+              source={require("../assets/images/icon/map.png")}
+              style={styles.iconMap}
+            />
+            <Text
+              style={styles.locationText}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {hotel.addresses?.detailAddress}, {hotel.addresses?.district}
+            </Text>
+          </View>
 
-  <View style={styles.priceRow}>
-    <Ionicons
-      name="cash-outline"
-      size={14}
-      color="#797979"
-      style={{ marginRight: 4 }}
-    />
-    <Text style={styles.price}>
-      {room.price_per_night.toLocaleString()}₫ / đêm
-    </Text>
-  </View>
-</View>
-
+          <View style={styles.priceRow}>
+            <Ionicons
+              name="cash-outline"
+              size={14}
+              color="#797979"
+              style={{ marginRight: 4 }}
+            />
+            <Text style={styles.price}>
+              {room.price_per_night.toLocaleString()}₫ / đêm
+            </Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -186,44 +192,38 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 12,
   },
-   info: {
+  info: {
     padding: 10,
   },
-
   name: {
     fontSize: 13,
     fontWeight: "600",
     marginBottom: 4,
     color: "#222",
-    flex: 1,           // cho phép chiếm hết chiều ngang
+    flex: 1,
   },
-
   locationContainer: {
     flexDirection: "row",
-    alignItems: "flex-start",  // để text nhiều dòng vẫn đẹp
+    alignItems: "flex-start",
     marginTop: 4,
   },
-
   iconMap: {
     height: 15,
     width: 15,
     tintColor: "#797979",
     marginRight: 5,
-    marginTop: 2,              // lệch nhẹ cho cân với text 2 dòng
+    marginTop: 2,
   },
-
   locationText: {
     fontSize: 11,
     color: "#555",
-    flex: 1,                   // cho phép wrap trong phần còn lại
+    flex: 1,
   },
-
   priceRow: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 6,
   },
-
   price: {
     color: "#27ae60",
     fontWeight: "700",

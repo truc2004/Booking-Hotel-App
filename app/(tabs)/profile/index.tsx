@@ -35,6 +35,12 @@ const MENU = [
     onPress: () => router.push("/(tabs)/profile/payment"),
   },
   {
+    key: "favorite",
+    label: "Khách sạn yêu thích",
+    icon: "help-circle-outline",
+    onPress: () => router.push("/(tabs)/profile/favoriteRoom"),
+  },
+  {
     key: "settings",
     label: "Cài đặt",
     icon: "settings-outline",

@@ -139,122 +139,6 @@ const handleCancelBooking = () => {
 };
 
 
-//   const handleCancelBooking = () => {
-//   console.log(">>> handleCancelBooking pressed, params =", params);
-
-//   if (selectedReason === "other" && !otherReason.trim()) {
-//     Alert.alert("Thông báo", "Vui lòng nhập lý do hủy");
-//     return;
-//   }
-
-//   if (!params.booking_id) {
-//     Alert.alert("Lỗi", "Không tìm thấy mã đặt phòng để hủy.");
-//     return;
-//   }
-
-//   Alert.alert(
-
-//     "Xác nhận hủy đặt phòng",
-//     "Bạn có chắc chắn muốn hủy đặt phòng này không?",
-//     [
-//       { text: "Không", style: "cancel" },
-//       {
-//         text: "Hủy đặt phòng",
-//         style: "destructive",
-//         onPress: async () => {
-//           try {
-//             setLoading(true);
-//             const finalReason = buildFinalReason();
-
-//             console.log(
-//               ">>> call bookingApi.cancel with",
-//               params.booking_id,
-//               finalReason
-//             );
-
-//             const res = await bookingApi.cancel(
-//               params.booking_id as string,
-//               finalReason
-//             );
-
-//             console.log(">>> cancel success, booking =", res);
-
-//             setLoading(false);
-//             Alert.alert(
-//               "Hủy thành công",
-//               "Đơn đặt phòng đã được hủy. Số tiền hoàn (nếu có) sẽ được xử lý trong 6–7 ngày làm việc. Vui lòng kiểm tra email để xem chi tiết.",
-//               [
-//                 {
-//                   text: "OK",
-//                   onPress: () => {
-//                     // nên dùng replace để quay về và tránh stack dày
-//                     router.replace("/(tabs)/historyBooking");
-//                   },
-//                 },
-//               ]
-//             );
-//           } catch (err: any) {
-//             console.error(">>> cancel booking error:", err?.message);
-
-//             // Nếu là lỗi từ axios thì log thêm chi tiết
-//             if (err?.response) {
-//               console.log(">>> cancel error status =", err.response.status);
-//               console.log(">>> cancel error data   =", err.response.data);
-//             }
-
-//             setLoading(false);
-//             Alert.alert(
-//               "Lỗi",
-//               "Không thể hủy đặt phòng. Vui lòng thử lại sau."
-//             );
-//           }
-//         },
-//       },
-//     ]
-//   );
-
-  
-// };
-
-// cach 2
-// const handleCancelBooking = async () => {
-//     // bỏ Alert, chỉ check đơn giản
-//     if (selectedReason === "other" && !otherReason.trim()) {
-//       console.log("Vui lòng nhập lý do hủy");
-//       return;
-//     }
-
-//     try {
-//       setLoading(true);
-//       const finalReason = buildFinalReason();
-
-//       console.log(
-//         ">>> call bookingApi.cancel with",
-//         params.booking_id,
-//         finalReason
-//       );
-
-//       const res = await bookingApi.cancel(
-//         params.booking_id as string,
-//         finalReason
-//       );
-
-//       console.log(">>> cancel success, booking =", res);
-   
-//       setLoading(false);
-
-//       // nếu muốn test điều hướng luôn thì giữ dòng này, không thì comment
-//       // router.replace("/(tabs)/historyBooking");
-//     } catch (err: any) {
-//       console.error(">>> cancel booking error:", err?.message);
-//       if (err?.response) {
-//         console.log(">>> cancel error status =", err.response.status);
-//         console.log(">>> cancel error data   =", err.response.data);
-//       }
-//       setLoading(false);
-//     }
-//   };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -367,12 +251,12 @@ const handleCancelBooking = () => {
               được xử lý trong 6–7 ngày làm việc.
             </Text>
 
-            <View style={styles.modalBookingIdRow}>
+            {/* <View style={styles.modalBookingIdRow}>
               <Text style={styles.modalBookingLabel}>Mã đặt phòng</Text>
               <Text style={styles.modalBookingValue}>
                 #{params.booking_id?.slice(-8).toUpperCase()}
               </Text>
-            </View>
+            </View> */}
 
             <View style={styles.modalButtonsRow}>
               {/* Nút hủy / quay lại */}
